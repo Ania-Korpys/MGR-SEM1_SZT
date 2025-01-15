@@ -1,0 +1,239 @@
+body {
+  color: #665544;
+  background-color: white;
+  font-family: Georgia, "Times New Roman", serif;
+  text-align: center;
+}
+
+.wrapper {
+  width: 720px;
+  margin: 0px auto;
+}
+
+.header {
+  margin: 40px 0px 20px 0px;
+}
+
+.entries {
+  width: 80%;
+  margin: auto;
+}
+
+.entry {
+  width: 220px;
+  float: left;
+  margin: 10px;
+  height: 198px;
+  background-repeat: no-repeat;
+  background-position: bottom;
+}
+
+figure {
+  display: block;
+  width: 202px;
+  height: 185px;
+  background-color: #e7e3d8;
+  padding: 9px;
+  text-align: left;
+}
+
+figure img {
+  width: 200px;
+  height: 150px;
+  border: 1px solid #d6d6d6;
+}
+
+figcaption {
+  background-image: url("images/icon.png");
+  padding-left: 20px;
+  background-repeat: no-repeat;
+}
+
+.button-like {
+  color: #4e5b60;
+  background-color: white;
+  border-color: #4e5b60;
+}
+
+.button-like:hover {
+  color: #cc4b37;
+  border-color: #cc4b37;
+}
+
+.liked {
+  color: #cc4b37;
+  border-color: #cc4b37;
+}
+
+#loader {
+  display: none;
+  border-style: none;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  z-index: 10;
+}
+
+/* do głównych "zakładek" */
+.modal {
+  display: none;
+  border-style: none;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* STRONA GŁÓWNA + KONTO (niezalogowany) */
+.modal_desc {
+  width: 80%;
+  font-family: Helvetica, Georgia, Times, serif;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px;
+  line-height: 150%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* przyciski: polubione / moje aukcje */
+.btn_group_logged {
+  padding: 10px;
+}
+
+.btn_group_logged button {
+  background-color: #6495ED;
+  border: 1px solid #6495ED;
+  color: white;
+  padding: 10px;
+  width: 25%;
+  margin-left: inherit;
+  margin-right: inherit;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.btn_group_logged button:hover {
+  background-color: #87CEFA;
+}
+
+/* panel logowania */
+.login {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding-top: 250px;
+}
+
+.modal-form {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.container {
+  padding: 12px;
+}
+
+/* przyciski */
+.button {
+  text-transform: uppercase;
+  background-color: inherit;
+  border: 1px solid #4e5b60;
+  border-color: #4e5b60;
+  color: #4e5b60;
+  padding: 8px 10px;
+  margin: 2px 0;
+}
+
+/* przycisk-cofnij */
+.back:hover {
+  background-color: #4e5b60;
+  color: white;
+}
+
+/* przycisk-szukaj */
+.search {
+  border-style: none;
+  background-color: #87CEFA;
+  color: white;
+}
+
+.search:hover {
+  background-color: #6495ED;
+}
+
+/* przycisk-zakładki */
+.page {
+  float: center;
+  border-style: hidden;
+}
+
+.page:hover {
+  color: #DC143C;
+  border: 1px solid #4e5b60;
+}
+
+/* przycisk-zaloguj/zarejestruj + więcej/mniej informacji */
+.log {
+  border: 1px solid #4e5b60;
+  color: #4e5b60;
+}
+
+.log:hover {
+  background-color: #f9bc50;
+}
+
+/* style na dodatkowe przyciski do głosowania */
+.yes {
+  border: 1px solid #14DC50;
+  background-color: #14DC50;
+  color: white;
+}
+
+.yes:hover {
+  background-color: #0FA53C;
+}
+
+.no {
+  border: 1px solid #DC143C;
+  background-color: #DC143C;
+  color: white;
+}
+
+.no:hover {
+  background-color: #A50F2D;
+}
+
+nav ul {
+  width: 80%;
+  padding: 10px;
+  margin: auto;
+  border-top: 2px solid #4e5b60;
+  border-bottom: 1px solid #4e5b60;
+  text-align: center;
+}
+
+nav li {
+  display: inline;
+  margin: auto;
+}
+
+nav li a {
+  color: #4e5b60;
+  text-transform: uppercase;
+  padding: 15px;
+}
+
+nav li a:hover, a.on {
+  color: #DC143C;
+}
+
+/* oznaczenie, że coś jest klikalne (łapka) */
+.pointer {
+  cursor: pointer;
+}

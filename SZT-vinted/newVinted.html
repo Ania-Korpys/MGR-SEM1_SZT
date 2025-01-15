@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Zakupy</title>
+  <link rel="stylesheet" href="newVintedStyle.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://kit.fontawesome.com/3929e16ef5.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div id="logo">
+    <img src="images/Logo.png" />
+  </div>
+
+  <nav>
+    <ul>
+      <li><button class="button page pointer" onclick="goToOffer()" style="width:auto;">Oferty</button></li>
+      <li><button class="button page pointer" onclick="ifLogged()" style="width:auto;">Konto</button></li>
+      <li><button class="button log pointer" id="buttonLog" type="submit" onclick="ifLoginOrLogout()">Zaloguj</button></li>
+    </ul>
+  </nav>
+
+  <!-- main part  -->
+  <div class="modal" id="modalOffer" style="display:block">
+  </div>
+
+  <!-- more info about clothes -->
+  <div class="modal login" id="moreInfo_container">
+    <div class="modal-form">
+      <div class="container">
+        <p>
+          Koszt: <br />
+          Nr telefonu: <br />
+          Adres e-mail: <br />
+          Adres: <br />
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Account -->
+  <div class="modal modal_desc" id="modalAccount">
+    <p>
+      Zaloguj się by mieć dostęp do:
+    <p>
+      kupienia czegoś, <br />
+      dodawania rzeczy do polubionych, <br />
+      przejrzenia listy wystawionych swoich rzeczy,<br />
+      wystawienia nowej rzeczy.<br />
+    </p>
+    </p>
+    <button class="button log pointer" onclick="document.getElementById('login_container').style.display='block'">Zaloguj</button>
+  </div>
+
+  <!-- zalogowany -->
+  <div class="modal" id="logged_container">
+    <div class="btn_group_logged">
+      <button class="button pointer" type="submit" onclick="getWantedClothes()">Polubione produkty</button>
+      <button class="button pointer" type="submit" onclick="getMyOffers()">Moje wystawione oferty</button>
+    </div>
+    <div id='wantedClothes'></div>
+    <div id='myOffers'></div>
+  </div>
+
+  <!-- logowanie -->
+  <div class="modal login" id="login_container">
+    <div class="modal-form">
+      <div class="container">
+        <label for="uname"><b>Nazwa użytkownika</b></label>
+        <input class="input" id="username" type="username" name="uname" placeholder="Wpisz nazwę użytkownika" required>
+      </div>
+      <div class="container">
+        <label for="password1"><b> Hasło</b></label>
+        <input class="input" id="password" type="password" name="password1" placeholder="Wpisz swoje hasło" required>
+      </div>
+      <div class="container">
+        <button class="button log pointer" type="submit" onclick="loginFunction()">Zaloguj</button>
+        <button class="button log pointer" type="submit" onclick="document.getElementById('register_container').style.display='block', document.getElementById('login_container').style.display='none'">Zarejestruj</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejestracja -->
+  <div class="modal login" id="register_container">
+    <div class="modal-form">
+      <div class="container">
+        <label for="username"><b>Nazwa użytkownika</b></label>
+        <input class="input" id="user_name" type="username" name="username" placeholder="Wpisz nazwę użytkownika" required>
+      </div>
+      <div class="container">
+        <label for="email"><b>Adres e-mail</b></label>
+        <input class="input" id="e_mail" type="email" name="email" placeholder="Wpisz swój adres e-mail" required>
+      </div>
+      <div class="container">
+        <label for="password1"><b>Hasło</b></label>
+        <input class="input" id="password1" type="password" name="password1" placeholder="Wpisz hasło (min 8 znaków)" required>
+      </div>
+      <div class="container">
+        <label for="password2"><b>Powtórzone hasło</b></label>
+        <input class="input" id="password2" type="password" name="password1" placeholder="Powtórz hasło" required>
+      </div>
+      <div class="container">
+        <button class="button log pointer" type="submit" onclick="registerFunction()">Zarejestruj</button>
+        <button class="button back pointer" type="submit" onclick="document.getElementById('login_container').style.display='block', document.getElementById('register_container').style.display='none'">Cofnij</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* funkcja do okien logowania/rejestracji jak się kliknie poza nimi */
+    var modal = document.getElementById('login_container'),
+      modal2 = document.getElementById('register_container');
+    modal3 = document.getElementById('moreInfo_container');
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+        document = document.getElementById("username").value = "";
+        document = document.getElementById("password").value = "";
+        document = document.getElementById("user_name").value = "";
+        document = document.getElementById("e_mail").value = "";
+        document = document.getElementById("password1").value = "";
+        document = document.getElementById("password2").value = "";
+      } else if (event.target == modal2) {
+        modal2.style.display = "none";
+        document = document.getElementById("username").value = "";
+        document = document.getElementById("password").value = "";
+        document = document.getElementById("user_name").value = "";
+        document = document.getElementById("e_mail").value = "";
+        document = document.getElementById("password1").value = "";
+        document = document.getElementById("password2").value = "";
+      } else if (event.target == modal3) {
+        modal3.style.display = "none";
+      }
+    }
+
+    if (window.localStorage.getItem('accessToken')) {
+      document.getElementById("buttonLog").innerHTML = "Wyloguj";
+    }
+
+    if (window.localStorage.getItem('todo') === "account") {
+      ifLogged();
+    }
+
+
+    /* logowanie - ZALOGUJ */
+    function loginFunction() {
+      var username_ = document.getElementById("username").value;
+      var password1_ = document.getElementById("password").value;
+      if (username_ != "" && password1_ != "") {
+        $.ajax({
+          type: "POST",
+          url: "http://127.0.0.1:8000/api/users/token",
+          dataType: "json",
+          data: {
+            "username": username_,
+            "password": password1_
+          },
+          success: function(response) {
+            window.localStorage.setItem('refreshToken', response['refresh']);
+            window.localStorage.setItem('accessToken', response['access']);
+            window.localStorage.setItem('userName', username_);
+            document.getElementById("buttonLog").innerHTML = "Wyloguj";
+            document = document.getElementById("username").value = "";
+            document = document.getElementById("password").value = "";
+            document = document.getElementById('login_container').style.display = 'none';
+            document = document.getElementById('modalAccount').style.display = 'none';
+            ifLogged();
+            alert("Logowanie zakończone powodzeniem.");
+            console.log(response);
+          },
+          error: function(response) {
+            alert("Niepoprawne dane logowania.");
+            console.log(response);
+          }
+        });
+      } else {
+        alert("Wypełnij wszystkie pola.");
+      }
+    }
+
+    /* wylogowywanie - WYLOGUJ */
+    function logoutFunction() {
+      var refresh = window.localStorage.getItem('refreshToken');
+      $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1:8000/api/users/logout",
+        headers: {
+          'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`
+        },
+        tokenFlag: true,
+        data: {
+          "refresh_token": refresh
+        },
+        success: function(response) {
+          window.localStorage.removeItem('refreshToken');
+          window.localStorage.removeItem('accessToken');
+          window.localStorage.removeItem('userName');
+          document.getElementById("buttonLog").innerHTML = "Zaloguj";
+          document = document.getElementById("logged_container").style.display = 'none';
+          window.location.reload();
+          alert("Zostałeś poprawnie wylogowany z systemu.");
+          console.log(response);
+        },
+        error: handleAjaxError
+      });
+    }
+
+    /* rejestracja - ZAREJESTRUJ */
+    function registerFunction() {
+      var username_ = document.getElementById("user_name").value;
+      var email_ = document.getElementById("e_mail").value;
+      var password1_ = document.getElementById("password1").value;
+      var password2_ = document.getElementById("password2").value;
+      if (username_ != "" && email_ != "" && password1_ != "" && password2_ != "") {
+        if (emailIsValid(email_)) {
+          if (password1_ === password2_) {
+            if (password1_.length >= 8) {
+              $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:8000/api/users/register",
+                data: {
+                  "username": username_,
+                  "email": email_,
+                  "password": password1_
+                },
+                success: function(response) {
+                  alert("Rejestacja zakończona powodzeniem.");
+                  console.log(response);
+                  document = document.getElementById("user_name").value = "";
+                  document = document.getElementById("e_mail").value = "";
+                  document = document.getElementById("password1").value = "";
+                  document = document.getElementById("password2").value = "";
+                  document = document.getElementById('login_container').style.display = 'block';
+                  document = document.getElementById('register_container').style.display = 'none';
+                },
+                error: function(response) {
+                  if (response.status === 400) {
+                    alert("Użytkownik o danym adresie e-mail bądź loginie już istnieje.");
+                  } else {
+                    alert("Rejestacja zakończona niepowodzeniem.");
+                    console.log(response);
+                  }
+                }
+              });
+            } else {
+              alert("Podane hasło jest za krótkie. Musi składać się z co najmniej ośmiu znaków.");
+            }
+          } else {
+            alert("Powtórzone hasło różni się od podanego hasła.");
+          }
+        } else {
+          alert("Niepoprawny adres e-mail.");
+        }
+      } else {
+        alert("Wypełnij wszystkie pola.");
+      }
+    }
+
+    /* sprawdzenie czy poprawny e_mail */
+    function emailIsValid(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    }
+
+    /* sprawdzenie która funkcja potrzebna (przycisk Zaloguj/Wyloguj) */
+    function ifLoginOrLogout() {
+      if (buttonLog.innerHTML === "Zaloguj") {
+        document = document.getElementById('login_container').style.display = 'block';
+      } else {
+        logoutFunction();
+      }
+    }
+
+    /* sprawdzenie czy zalogowany do Konto (przy przejściu do zakładki KONTO) */
+    function ifLogged() {
+      if (window.localStorage.getItem('todo')) {
+        window.localStorage.removeItem('todo');
+        const buttonLog = document.getElementById("buttonLog");
+        if (buttonLog.innerHTML === "Zaloguj") {
+          document = document.getElementById("modalAccount").style.display = 'block';
+        } else {
+          document = document.getElementById("logged_container").style.display = 'block';
+          document.getElementById("wantedClothes").innerHTML = "";
+          document.getElementById("myOffers").innerHTML = "";
+        }
+      } else {
+        window.localStorage.setItem('todo', "account");
+        window.location.reload();
+      }
+    }
+
+    /* przełączanie stron */
+    function goToOffer() {
+      document = document.getElementById('modalOffer').style.display = 'block';
+      document.getElementById("modalOffer").innerHTML = "";
+      document = document.getElementById('modalAccount').style.display = 'none';
+      document = document.getElementById("logged_container").style.display = 'none';
+      getOffer();
+    }
+
+    function getOffer() {
+      var images = ["images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg",
+        "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg",
+        "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg"
+      ];
+      var names = ["print-01", "print-02", "print-03", "print-01", "print-02", "print-03", "print-01", "print-02", "print-03", "print-01", "print-02", "print-03", "print-01", "print-02", "print-03", "print-01", "print-02", "print-03", "print-01",
+        "print-02", "print-03", "print-01", "print-02", "print-03"
+      ]
+
+      let text = "";
+      text += '<div class="entries">';
+      for (let i in images) {
+        var imageId = images[i];
+        var buttonLikeId = 'like_' + i;
+        var buttonMoreId = 'more_' + i;
+        text += '<div class="entry"> <figure><img src="' + images[i] + '"/>';
+        text += '<button class="button-like" id="' + buttonLikeId + '" onclick="likeThat(' + i + ')"> <i class="fa fa-heart"></i> <span>Like</span></button>';
+        text += '<button class="button-like" id="' + buttonMoreId + '" type="submit" onclick="moreInfo(' + i + ')"> <span>Więcej informacji</span></button>';
+        text += '</figure></div>';
+      }
+      text += '</div>';
+
+      document.getElementById("modalOffer").innerHTML = text;
+    }
+
+    function likeThat(i) {
+      let buttonId = 'like_' + i;
+      let element = document.getElementById(buttonId);
+      element.classList.toggle("liked");
+    }
+
+    function moreInfo(i) {
+      let buttonId = 'more_' + i;
+      let element = document.getElementById(buttonId);
+      document = document.getElementById('moreInfo_container').style.display = 'block';
+    }
+  </script>
+
+</body>
+
+</html>
