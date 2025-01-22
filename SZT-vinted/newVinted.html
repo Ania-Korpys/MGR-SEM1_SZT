@@ -6,7 +6,12 @@
   <title>Zakupy</title>
   <link rel="stylesheet" href="newVintedStyle.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
   <script src="https://kit.fontawesome.com/3929e16ef5.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+
 </head>
 
 <body>
@@ -86,8 +91,16 @@
   <div class="modal login" id="register_container">
     <div class="modal-form">
       <div class="container">
-        <label for="username"><b>Nazwa użytkownika</b></label>
-        <input class="input" id="user_name" type="username" name="username" placeholder="Wpisz nazwę użytkownika" required>
+        <label for="name"><b>Imię</b></label>
+        <input class="input" id="name" type="text" name="name" placeholder="Wpisz swoje imię" required>
+      </div>
+      <div class="container">
+        <label for="surname"><b>Nazwisko</b></label>
+        <input class="input" id="surname" type="text" name="surname" placeholder="Wpisz swoje nazwisko" required>
+      </div>
+      <div class="container">
+        <label for="phone"><b>Numer telefonu</b></label>
+        <input class="input" id="phone" type="tel" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{3}" placeholder="Wpisz swój numer telefonu" required>
       </div>
       <div class="container">
         <label for="email"><b>Adres e-mail</b></label>
@@ -100,6 +113,14 @@
       <div class="container">
         <label for="password2"><b>Powtórzone hasło</b></label>
         <input class="input" id="password2" type="password" name="password1" placeholder="Powtórz hasło" required>
+      </div>
+      <div class="container">
+        <label for="city"><b>Miasto</b></label>
+        <input class="input" id="city" type="text" name="city" placeholder="Wpisz swoje miasto" required>
+      </div>
+      <div class="container">
+        <label for="voivodeship"><b>Województwo</b></label>
+        <input class="input" id="voivodeship" type="text" name="voivodeship" placeholder="Wybierz swoje województwo" required>
       </div>
       <div class="container">
         <button class="button log pointer" type="submit" onclick="registerFunction()">Zarejestruj</button>
@@ -209,29 +230,42 @@
 
     /* rejestracja - ZAREJESTRUJ */
     function registerFunction() {
-      var username_ = document.getElementById("user_name").value;
+      var name_ = document.getElementById("name").value;
+      var surname_ = document.getElementById("surname").value;
+      var phone_ = document.getElementById("phone").value;
       var email_ = document.getElementById("e_mail").value;
       var password1_ = document.getElementById("password1").value;
       var password2_ = document.getElementById("password2").value;
-      if (username_ != "" && email_ != "" && password1_ != "" && password2_ != "") {
+      var city_ = document.getElementById("city").value;
+      var voivodeship_ = document.getElementById("voivodeship").value;
+      if (name_ != "" && surname_ != "" && email_ != "" && password1_ != "" && password2_ != "") {
         if (emailIsValid(email_)) {
           if (password1_ === password2_) {
             if (password1_.length >= 8) {
               $.ajax({
                 type: "POST",
-                url: "http://127.0.0.1:8000/api/users/register",
+                url: "https://glowing-swan-novel.ngrok-free.app/api/auth/register",
+                contentType: 'application/json',
                 data: {
-                  "username": username_,
+                  "name": name_,
+                  "surname": surname_,
+                  "phone": phone_,
                   "email": email_,
-                  "password": password1_
+                  "password": password1_,
+                  "city": city_,
+                  "voivodeship": voivodeship_
                 },
                 success: function(response) {
                   alert("Rejestacja zakończona powodzeniem.");
                   console.log(response);
-                  document = document.getElementById("user_name").value = "";
+                  document = document.getElementById("name").value = "";
+                  document = document.getElementById("surname").value = "";
+                  document = document.getElementById("phone").value = "";
                   document = document.getElementById("e_mail").value = "";
                   document = document.getElementById("password1").value = "";
                   document = document.getElementById("password2").value = "";
+                  document = document.getElementById("city").value = "";
+                  document = document.getElementById("voivodeship").value = "";
                   document = document.getElementById('login_container').style.display = 'block';
                   document = document.getElementById('register_container').style.display = 'none';
                 },
