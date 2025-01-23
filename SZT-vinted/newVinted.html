@@ -132,25 +132,23 @@
   <script>
     /* funkcja do okien logowania/rejestracji jak się kliknie poza nimi */
     var modal = document.getElementById('login_container'),
-      modal2 = document.getElementById('register_container');
-    modal3 = document.getElementById('moreInfo_container');
+      modal2 = document.getElementById('register_container'),
+      modal3 = document.getElementById('moreInfo_container');
     window.onclick = function(event) {
       if (event.target == modal) {
         modal.style.display = "none";
-        document = document.getElementById("username").value = "";
+        document = document.getElementById("email").value = "";
         document = document.getElementById("password").value = "";
-        document = document.getElementById("user_name").value = "";
-        document = document.getElementById("e_mail").value = "";
-        document = document.getElementById("password1").value = "";
-        document = document.getElementById("password2").value = "";
       } else if (event.target == modal2) {
         modal2.style.display = "none";
-        document = document.getElementById("username").value = "";
-        document = document.getElementById("password").value = "";
-        document = document.getElementById("user_name").value = "";
+        document = document.getElementById("name").value = "";
+        document = document.getElementById("surname").value = "";
+        document = document.getElementById("phone").value = "";
         document = document.getElementById("e_mail").value = "";
         document = document.getElementById("password1").value = "";
         document = document.getElementById("password2").value = "";
+        document = document.getElementById("city").value = "";
+        document = document.getElementById("voivodeship").value = "";
       } else if (event.target == modal3) {
         modal3.style.display = "none";
       }
@@ -165,25 +163,34 @@
     }
 
 
+    /* sprawdzenie która funkcja potrzebna (przycisk Zaloguj/Wyloguj) */
+    function ifLoginOrLogout() {
+      if (buttonLog.innerHTML === "Zaloguj") {
+        document = document.getElementById('login_container').style.display = 'block';
+      } else {
+        logoutFunction();
+      }
+    }
+
     /* logowanie - ZALOGUJ */
     function loginFunction() {
-      var username_ = document.getElementById("username").value;
-      var password1_ = document.getElementById("password").value;
-      if (username_ != "" && password1_ != "") {
+      var email_ = document.getElementById("email").value;
+      var password_ = document.getElementById("password").value;
+      if (email_ != "" && password_ != "") {
         $.ajax({
           type: "POST",
-          url: "http://127.0.0.1:8000/api/users/token",
-          dataType: "json",
-          data: {
-            "username": username_,
-            "password": password1_
-          },
+          url: "https://glowing-swan-novel.ngrok-free.app/api/auth/login",
+          contentType: 'application/json',
+          data: JSON.stringify({
+            "email": email_,
+            "password": password_
+          }),
           success: function(response) {
             window.localStorage.setItem('refreshToken', response['refresh']);
             window.localStorage.setItem('accessToken', response['access']);
-            window.localStorage.setItem('userName', username_);
+            window.localStorage.setItem('email', email_);
             document.getElementById("buttonLog").innerHTML = "Wyloguj";
-            document = document.getElementById("username").value = "";
+            document = document.getElementById("email").value = "";
             document = document.getElementById("password").value = "";
             document = document.getElementById('login_container').style.display = 'none';
             document = document.getElementById('modalAccount').style.display = 'none';
@@ -203,29 +210,13 @@
 
     /* wylogowywanie - WYLOGUJ */
     function logoutFunction() {
-      var refresh = window.localStorage.getItem('refreshToken');
-      $.ajax({
-        type: "POST",
-        url: "http://127.0.0.1:8000/api/users/logout",
-        headers: {
-          'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`
-        },
-        tokenFlag: true,
-        data: {
-          "refresh_token": refresh
-        },
-        success: function(response) {
-          window.localStorage.removeItem('refreshToken');
-          window.localStorage.removeItem('accessToken');
-          window.localStorage.removeItem('userName');
-          document.getElementById("buttonLog").innerHTML = "Zaloguj";
-          document = document.getElementById("logged_container").style.display = 'none';
-          window.location.reload();
-          alert("Zostałeś poprawnie wylogowany z systemu.");
-          console.log(response);
-        },
-        error: handleAjaxError
-      });
+      window.localStorage.removeItem('refreshToken');
+      window.localStorage.removeItem('accessToken');
+      window.localStorage.removeItem('email');
+      document.getElementById("buttonLog").innerHTML = "Zaloguj";
+      document = document.getElementById("logged_container").style.display = 'none';
+      window.location.reload();
+      alert("Zostałeś poprawnie wylogowany z systemu.");
     }
 
     /* rejestracja - ZAREJESTRUJ */
@@ -246,7 +237,7 @@
                 type: "POST",
                 url: "https://glowing-swan-novel.ngrok-free.app/api/auth/register",
                 contentType: 'application/json',
-                data: {
+                data: JSON.stringify({
                   "name": name_,
                   "surname": surname_,
                   "phone": phone_,
@@ -254,7 +245,7 @@
                   "password": password1_,
                   "city": city_,
                   "voivodeship": voivodeship_
-                },
+                }),
                 success: function(response) {
                   alert("Rejestacja zakończona powodzeniem.");
                   console.log(response);
@@ -297,15 +288,6 @@
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
     }
 
-    /* sprawdzenie która funkcja potrzebna (przycisk Zaloguj/Wyloguj) */
-    function ifLoginOrLogout() {
-      if (buttonLog.innerHTML === "Zaloguj") {
-        document = document.getElementById('login_container').style.display = 'block';
-      } else {
-        logoutFunction();
-      }
-    }
-
     /* sprawdzenie czy zalogowany do Konto (przy przejściu do zakładki KONTO) */
     function ifLogged() {
       if (window.localStorage.getItem('todo')) {
@@ -334,28 +316,68 @@
     }
 
     function getOffer() {
-      var images = ["images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg",
-        "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg",
-        "images/print-03.jpg", "images/print-01.jpg", "images/print-02.jpg", "images/print-03.jpg"
-      ];
-      var names = ["print-01", "print-02", "print-03", "print-01", "print-02", "print-03", "print-01", "print-02", "print-03", "print-01", "print-02", "print-03", "print-01", "print-02", "print-03", "print-01", "print-02", "print-03", "print-01",
-        "print-02", "print-03", "print-01", "print-02", "print-03"
-      ]
+      $.ajax({
+        url: "https://glowing-swan-novel.ngrok-free.app/api/productPreview/getAnns?PageNumber=1&PageSize=10",
+        type: "GET",
+        headers: {
+          'Accept': 'application/json' // Nagłówek Accept informujący o oczekiwanym formacie odpowiedzi
+        },
+        beforeSend: function() {
+          $("#loader").show(); // Show image container
+        },
+        success: function(response) {
+          var res = response;
+          console.log(response);
+          let text = "";
+          text += '<div class="entries" id="entries">';
+          responseJSON = JSON.parse(response);
+          for (let i in responseJSON) {
+            var offer_id = responseJSON[i].anId;
+            var offer_price = responseJSON[i].price;
+            var offer_desc = responseJSON[i].description;
+            var offer_city = responseJSON[i].city;
+            temp = responseJSON[i].images;
+            var image_url = temp.imageUrl;
 
-      let text = "";
-      text += '<div class="entries">';
-      for (let i in images) {
-        var imageId = images[i];
-        var buttonLikeId = 'like_' + i;
-        var buttonMoreId = 'more_' + i;
-        text += '<div class="entry"> <figure><img src="' + images[i] + '"/>';
-        text += '<button class="button-like" id="' + buttonLikeId + '" onclick="likeThat(' + i + ')"> <i class="fa fa-heart"></i> <span>Like</span></button>';
-        text += '<button class="button-like" id="' + buttonMoreId + '" type="submit" onclick="moreInfo(' + i + ')"> <span>Więcej informacji</span></button>';
-        text += '</figure></div>';
-      }
-      text += '</div>';
+            var buttonLikeId = 'like_' + offer_id; //i;
+            var buttonMoreId = 'more_' + offer_id; //i;
 
-      document.getElementById("modalOffer").innerHTML = text;
+            text += '<div class="entry"> <figure><img src="' + image_url + '"/>';
+            text += '<button class="button-like" id="' + buttonLikeId + '" onclick="likeThat(' + i + ')"> <i class="fa fa-heart"></i> <span>Like</span></button>';
+            text += '<button class="button-like" id="' + buttonMoreId + '" type="submit" onclick="moreInfo(' + i + ')"> <span>Więcej informacji</span></button>';
+            text += '</figure></div>';
+          }
+          text += '</div>';
+          document.getElementById("modalOffer").innerHTML = text;
+          $('#entries').DataTable({
+            "ordering": false,
+            "lengthMenu": [5, 10, 25, 50, 75, 100],
+            "language": {
+              "processing": "Przetwarzanie...",
+              "search": "Filtruj:",
+              "lengthMenu": "Pokaż _MENU_ ofert",
+              "info": "Oferty od _START_ do _END_ z _TOTAL_ łącznie",
+              "infoEmpty": "Ofert 0 z 0 dostępnych",
+              "infoFiltered": "(filtrowanie spośród _MAX_ dostępnych ofert)",
+              "loadingRecords": "Wczytywanie...",
+              "zeroRecords": "Nie znaleziono pasujących ofert",
+              "paginate": {
+                "first": "Pierwsza",
+                "previous": "Poprzednia",
+                "next": "Następna",
+                "last": "Ostatnia"
+              },
+            }
+          });
+        },
+        complete: function(data) {
+          $("#loader").hide();
+        },
+        error: function(response) {
+          alert("Wystąpił błąd, przepraszamy.")
+          console.log(response);
+        }
+      });
     }
 
     function likeThat(i) {
