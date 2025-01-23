@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Zakupy</title>
+  <link rel="stylesheet" href="ShoppingLoverStyle.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
+  <script src="https://kit.fontawesome.com/3929e16ef5.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+</head>
+
+<body>
+  <div id="logo">
+    <img src="images/Logo.png" />
+  </div>
+
+  <nav>
+    <ul>
+      <li><button class="button page pointer" onclick="goToOffer()" style="width:auto;">Oferty</button></li>
+      <li><button class="button page pointer" onclick="ifLogged()" style="width:auto;">Konto</button></li>
+      <li><button class="button back" id="buttonAddOffer" type="submit" onclick="addNewOffer()">Dodaj ofertę</button></li>
+      <li><button class="button log pointer" id="buttonLog" type="submit" onclick="ifLoginOrLogout()">Zaloguj</button></li>
+    </ul>
+  </nav>
+
+  <!-- Image loader -->
+  <div id="loader">
+    <img src="images/reload.gif">
+  </div>
+
+  <!-- main part  -->
+  <div class="modal" id="modalOffer" style="display:block">
+  </div>
+
+  <!-- more info about clothes -->
+  <div class="modal login" id="moreInfo_container">
+  </div>
+
+  <!-- dodawanie ogłoszenia -->
+  <div class="modal offer_container" id="add_new_offer">
+    <h1>Wystaw nową ofertę</h1>
+    <form id="offerForm">
+      <div class="form-group">
+        <label for="firstName">Imię:</label>
+        <input type="text" id="firstName" name="firstName" required>
+      </div>
+      <div class="form-group">
+        <label for="lastName">Nazwisko:</label>
+        <input type="text" id="lastName" name="lastName" required>
+      </div>
+      <div class="form-group">
+        <label for="price">Cena (PLN):</label>
+        <input type="number" id="price" name="price" required min="0">
+      </div>
+      <div class="form-group">
+        <label for="genre">Gatunek:</label>
+        <input type="text" id="genre" name="genre" required>
+      </div>
+      <div class="form-group">
+        <label for="description">Opis:</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="image">Zdjęcie:</label>
+        <input type="file" id="image" name="image" class="file-input" accept="image/*" required>
+      </div>
+      <button class="button_offer" type="submit" onclick="saveNewOffer()">Zapisz ofertę</button>
+    </form>
+  </div>
+
+  <!-- User Account -->
+  <div class="modal modal_desc" id="modalAccount">
+    <p>
+      Zaloguj się by mieć dostęp do:
+    <p>
+      kupienia czegoś, <br />
+      dodawania rzeczy do polubionych, <br />
+      przejrzenia listy wystawionych swoich rzeczy,<br />
+      wystawienia nowej rzeczy.<br />
+    </p>
+    </p>
+    <button class="button log pointer" onclick="document.getElementById('login_container').style.display='block'">Zaloguj</button>
+  </div>
+
+  <!-- zalogowany -->
+  <div class="modal" id="logged_container">
+    <div class="btn_group_logged">
+      <button class="button pointer" type="submit" onclick="getWantedClothes()">Polubione produkty</button>
+      <button class="button pointer" type="submit" onclick="getMyOffers()">Moje wystawione oferty</button>
+    </div>
+    <div id='wantedClothes'></div>
+    <div id='myOffers'></div>
+  </div>
+
+  <!-- logowanie -->
+  <div class="modal login" id="login_container">
+    <div class="modal-form">
+      <div class="container">
+        <label for="uname"><b>E-mail</b></label>
+        <input class="input" id="email" type="text" name="email" placeholder="Wpisz swój e-mail" required>
+      </div>
+      <div class="container">
+        <label for="password1"><b>Hasło</b></label>
+        <input class="input" id="password" type="password" name="password" placeholder="Wpisz swoje hasło" required>
+      </div>
+      <div class="container">
+        <button class="button log pointer" type="submit" onclick="loginFunction()">Zaloguj</button>
+        <button class="button log pointer" type="submit" onclick="document.getElementById('register_container').style.display='block', document.getElementById('login_container').style.display='none'">Zarejestruj</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejestracja -->
+  <div class="modal login" id="register_container">
+    <div class="modal-form">
+      <div class="container">
+        <label for="name"><b>Imię</b></label>
+        <input class="input" id="name" type="text" name="name" placeholder="Wpisz swoje imię" required>
+      </div>
+      <div class="container">
+        <label for="surname"><b>Nazwisko</b></label>
+        <input class="input" id="surname" type="text" name="surname" placeholder="Wpisz swoje nazwisko" required>
+      </div>
+      <div class="container">
+        <label for="phone"><b>Numer telefonu</b></label>
+        <input class="input" id="phone" type="tel" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{3}" placeholder="Wpisz swój numer telefonu" required>
+      </div>
+      <div class="container">
+        <label for="email"><b>Adres e-mail</b></label>
+        <input class="input" id="e_mail" type="email" name="email" placeholder="Wpisz swój adres e-mail" required>
+      </div>
+      <div class="container">
+        <label for="password1"><b>Hasło</b></label>
+        <input class="input" id="password1" type="password" name="password1" placeholder="Wpisz hasło (min 8 znaków)" required>
+      </div>
+      <div class="container">
+        <label for="password2"><b>Powtórzone hasło</b></label>
+        <input class="input" id="password2" type="password" name="password1" placeholder="Powtórz hasło" required>
+      </div>
+      <div class="container">
+        <label for="city"><b>Miasto</b></label>
+        <input class="input" id="city" type="text" name="city" placeholder="Wpisz swoje miasto" required>
+      </div>
+      <div class="container">
+        <label for="voivodeship"><b>Województwo</b></label>
+        <input class="input" id="voivodeship" type="text" name="voivodeship" placeholder="Wybierz swoje województwo" required>
+      </div>
+      <div class="container">
+        <button class="button log pointer" type="submit" onclick="registerFunction()">Zarejestruj</button>
+        <button class="button back pointer" type="submit" onclick="document.getElementById('login_container').style.display='block', document.getElementById('register_container').style.display='none'">Cofnij</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- dodawanie ogłoszenia -->
+  <div class="modal login" id="add_new_item">
+    <form enctype="multipart/form-data" action="plik.php" method="post">
+
+      <input type="hidden" name="MAX_FILE_SIZE" value="512000" />
+      <input type="file" name="nazwa_pliku" />
+      <input type="submit" value="wyślij" />
+    </form>
+  </div>
+
+  <script>
+    var global_url = "https://0j246c7g-7052.euw.devtunnels.ms/";
+    /* funkcja do okien logowania/rejestracji jak się kliknie poza nimi */
+    var modal = document.getElementById('login_container'),
+      modal2 = document.getElementById('register_container'),
+      modal3 = document.getElementById('moreInfo_container');
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+        document = document.getElementById("email").value = "";
+        document = document.getElementById("password").value = "";
+      } else if (event.target == modal2) {
+        modal2.style.display = "none";
+        document = document.getElementById("name").value = "";
+        document = document.getElementById("surname").value = "";
+        document = document.getElementById("phone").value = "";
+        document = document.getElementById("e_mail").value = "";
+        document = document.getElementById("password1").value = "";
+        document = document.getElementById("password2").value = "";
+        document = document.getElementById("city").value = "";
+        document = document.getElementById("voivodeship").value = "";
+      } else if (event.target == modal3) {
+        modal3.style.display = "none";
+      }
+    }
+
+    if (window.localStorage.getItem('accessToken')) {
+      document.getElementById("buttonLog").innerHTML = "Wyloguj";
+    }
+
+    if (window.localStorage.getItem('todo') === "account") {
+      ifLogged();
+    }
+
+    /* sprawdzenie która funkcja potrzebna (przycisk Zaloguj/Wyloguj) */
+    function ifLoginOrLogout() {
+      if (buttonLog.innerHTML === "Zaloguj") {
+        document = document.getElementById('login_container').style.display = 'block';
+      } else {
+        logoutFunction();
+      }
+    }
+
+    /* logowanie - ZALOGUJ */
+    function loginFunction() {
+      var email_ = document.getElementById("email").value;
+      var password_ = document.getElementById("password").value;
+      if (email_ != "" && password_ != "") {
+        $.ajax({
+          type: "POST",
+          url: global_url + "api/auth/login",
+          contentType: 'application/json',
+          data: JSON.stringify({
+            "email": email_,
+            "password": password_
+          }),
+          success: function(response) {
+            window.localStorage.setItem('refreshToken', response['refresh']);
+            window.localStorage.setItem('accessToken', response['access']);
+            window.localStorage.setItem('email', email_);
+            document.getElementById("buttonLog").innerHTML = "Wyloguj";
+            document = document.getElementById("email").value = "";
+            document = document.getElementById("password").value = "";
+            document = document.getElementById('login_container').style.display = 'none';
+            document = document.getElementById('modalAccount').style.display = 'none';
+            ifLogged();
+            alert("Logowanie zakończone powodzeniem.");
+            console.log(response);
+          },
+          error: function(response) {
+            alert("Niepoprawne dane logowania.");
+            console.log(response);
+          }
+        });
+      } else {
+        alert("Wypełnij wszystkie pola.");
+      }
+    }
+
+    /* wylogowywanie - WYLOGUJ */
+    function logoutFunction() {
+      window.localStorage.removeItem('refreshToken');
+      window.localStorage.removeItem('accessToken');
+      window.localStorage.removeItem('email');
+      document.getElementById("buttonLog").innerHTML = "Zaloguj";
+      document = document.getElementById("logged_container").style.display = 'none';
+      window.location.reload();
+      alert("Zostałeś poprawnie wylogowany z systemu.");
+    }
+
+    /* rejestracja - ZAREJESTRUJ */
+    function registerFunction() {
+      var name_ = document.getElementById("name").value;
+      var surname_ = document.getElementById("surname").value;
+      var phone_ = document.getElementById("phone").value;
+      var email_ = document.getElementById("e_mail").value;
+      var password1_ = document.getElementById("password1").value;
+      var password2_ = document.getElementById("password2").value;
+      var city_ = document.getElementById("city").value;
+      var voivodeship_ = document.getElementById("voivodeship").value;
+      if (name_ != "" && surname_ != "" && email_ != "" && password1_ != "" && password2_ != "") {
+        if (emailIsValid(email_)) {
+          if (password1_ === password2_) {
+            if (password1_.length >= 8) {
+              $.ajax({
+                type: "POST",
+                url: global_url + "api/auth/register",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                  "name": name_,
+                  "surname": surname_,
+                  "phone": phone_,
+                  "email": email_,
+                  "password": password1_,
+                  "city": city_,
+                  "voivodeship": voivodeship_
+                }),
+                success: function(response) {
+                  alert("Rejestacja zakończona powodzeniem.");
+                  console.log(response);
+                  document = document.getElementById("name").value = "";
+                  document = document.getElementById("surname").value = "";
+                  document = document.getElementById("phone").value = "";
+                  document = document.getElementById("e_mail").value = "";
+                  document = document.getElementById("password1").value = "";
+                  document = document.getElementById("password2").value = "";
+                  document = document.getElementById("city").value = "";
+                  document = document.getElementById("voivodeship").value = "";
+                  document = document.getElementById('login_container').style.display = 'block';
+                  document = document.getElementById('register_container').style.display = 'none';
+                },
+                error: function(response) {
+                  if (response.status === 400) {
+                    alert("Użytkownik o danym adresie e-mail bądź loginie już istnieje.");
+                  } else {
+                    alert("Rejestacja zakończona niepowodzeniem.");
+                    console.log(response);
+                  }
+                }
+              });
+            } else {
+              alert("Podane hasło jest za krótkie. Musi składać się z co najmniej ośmiu znaków.");
+            }
+          } else {
+            alert("Powtórzone hasło różni się od podanego hasła.");
+          }
+        } else {
+          alert("Niepoprawny adres e-mail.");
+        }
+      } else {
+        alert("Wypełnij wszystkie pola.");
+      }
+    }
+
+    /* sprawdzenie czy poprawny e_mail */
+    function emailIsValid(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    }
+
+    /* sprawdzenie czy zalogowany do Konto (przy przejściu do zakładki KONTO) */
+    function ifLogged() {
+      if (window.localStorage.getItem('todo')) {
+        window.localStorage.removeItem('todo');
+        const buttonLog = document.getElementById("buttonLog");
+        if (buttonLog.innerHTML === "Zaloguj") {
+          document = document.getElementById("modalAccount").style.display = 'block';
+        } else {
+          document = document.getElementById("logged_container").style.display = 'block';
+          document.getElementById("wantedClothes").innerHTML = "";
+          document.getElementById("myOffers").innerHTML = "";
+        }
+      } else {
+        window.localStorage.setItem('todo', "account");
+        window.location.reload();
+      }
+    }
+
+    /* po kliknięciu na dodanie oferty z menu */
+    function addNewOffer() {
+      document = document.getElementById('add_new_offer').style.display = 'block';
+      document = document.getElementById('modalOffer').style.display = 'none';
+      document = document.getElementById('modalAccount').style.display = 'none';
+      document = document.getElementById("logged_container").style.display = 'none';
+    }
+
+    /* dodanie nowej oferty */
+    function saveNewOffer() {
+      // Pobranie danych z formularza
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
+      const price = document.getElementById('price').value;
+      const genre = document.getElementById('genre').value;
+      const description = document.getElementById('description').value;
+      const imageFile = document.getElementById('image').files[0];
+
+      // Utworzenie obiektu oferty
+      const offerData = {
+        firstName: firstName,
+        lastName: lastName,
+        price: price,
+        genre: genre,
+        description: description,
+        image: imageFile ? imageFile.name : null
+      };
+
+      // Wyświetlenie danych oferty w konsoli (możesz tutaj wysłać dane na serwer)
+      console.log('Nowa oferta:', offerData);
+
+      // Wyświetlenie komunikatu o powodzeniu
+      alert('Oferta została zapisana!');
+    }
+
+    /* przełączanie stron */
+    function goToOffer() {
+      document = document.getElementById('modalOffer').style.display = 'block';
+      document.getElementById("modalOffer").innerHTML = "";
+      document = document.getElementById('add_new_offer').style.display = 'none';
+      document = document.getElementById('modalAccount').style.display = 'none';
+      document = document.getElementById("logged_container").style.display = 'none';
+      getOffers();
+    }
+
+    /* Pobranie wszystkich ofert */
+    function getOffers() {
+      var my_json = {
+        "$id": "1",
+        "totalCount": 7,
+        "pageSize": 2,
+        "currentPage": 1,
+        "totalPages": 4,
+        "items": {
+          "$id": "2",
+          "$values": [{
+            "$id": "3",
+            "anId": 7,
+            "slug": "nike-airmax-30160134",
+            "userId": 1,
+            "years": 0,
+            "price": 200,
+            "description": "Air max na sprzed.",
+            "city": "Poznan",
+            "lat": 52.4082663,
+            "lng": 16.9335199,
+            "summary": " ",
+            "datePosted": "2025-01-19T22:01:52.1097278",
+            "user": null,
+            "comments": {
+              "$id": "4",
+              "$values": []
+            },
+            "images": {
+              "$id": "5",
+              "$values": [{
+                "$id": "6",
+                "imageId": 4,
+                "anId": 7,
+                "imageUrl": "https://storage.googleapis.com/blobstorageclothes/1-nike-airmax-30160134.png",
+                "announcement": {
+                  "$ref": "3"
+                }
+              }]
+            },
+            "likedBy": null
+          }, {
+            "$id": "7",
+            "anId": 6,
+            "slug": "nike-airmax-84416667",
+            "userId": 1,
+            "years": 0,
+            "price": 200,
+            "description": "Air max na sprzed.",
+            "city": "Poznan",
+            "lat": 52.4082663,
+            "lng": 16.9335199,
+            "summary": " ",
+            "datePosted": "2025-01-19T21:57:51.6247964",
+            "user": null,
+            "comments": {
+              "$id": "8",
+              "$values": []
+            },
+            "images": {
+              "$id": "9",
+              "$values": [{
+                "$id": "10",
+                "imageId": 3,
+                "anId": 6,
+                "imageUrl": "https://storage.googleapis.com/blobstorageclothes/1-nike-airmax-84416667.png",
+                "announcement": {
+                  "$ref": "7"
+                }
+              }]
+            },
+            "likedBy": null
+          }]
+        }
+      };
+      let items = my_json.items.$values; // Lista ogłoszeń
+      let text = "";
+      text += '<div class="entries" id="entries">';
+      for (let i in items) {
+        var offer_id = items[i].anId;
+        var offer_price = items[i].price;
+        var offer_desc = items[i].description;
+        var offer_city = items[i].city;
+        var images = items[i].images.$values;
+        var image_url = "";
+
+        for (let j in images) {
+          image_url = images[j].imageUrl;
+        }
+
+        var buttonLikeId = 'like_' + offer_id;
+        var buttonMoreId = 'more_' + offer_id;
+
+        text += '<div class="entry"> <figure><img src="' + image_url + '"/>';
+        text += '<br><var class="offer description">Cena: </var>' + '<var class="offer">' + offer_price + '</var>';
+        text += '<br><var class="offer description">Miasto: </var>' + '<var class="offer">' + offer_city + '</var>';
+        text += '<br><button class="button-like" id="' + buttonLikeId + '" onclick="likeThat(\'' + offer_id + '\')"> <i class="fa fa-heart"></i> <span>Like</span></button>';
+        text += '<button class="button-like" id="' + buttonMoreId + '" type="submit" onclick="moreInfo(' + offer_id + ')"> <span>Więcej informacji</span></button>';
+        text += '</figure></div>';
+      }
+      text += '</div>';
+      document.getElementById("modalOffer").innerHTML = text;
+    }
+
+    // polubienie oferty
+    function likeThat(i) {
+      let buttonId = 'like_' + i;
+
+      if (window.localStorage.getItem('accessToken')) {
+        $.ajax({
+          type: "POST",
+          url: "https://glowing-swan-novel.ngrok-free.app/api/AccountManager/AddAnnToFavorites",
+          headers: {
+            'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`
+          },
+          tokenFlag: true,
+          data: {
+            "email": window.localStorage.getItem('email'),
+            "annId": i
+          },
+          success: function(response) {
+            alert("Ocena została zapisana.");
+            let element = document.getElementById(buttonId);
+            element.classList.toggle("liked");
+          },
+          error: function(response) {
+            alert("Wystąpił błąd, przepraszamy.")
+            console.log(response);
+          },
+          complete: function(data) {
+            // tylko do sprawdzenia
+            let element = document.getElementById(buttonId);
+            element.classList.toggle("liked");
+          }
+        });
+      } else {
+        alert("Polubienie oferty to opcja dla zalogowanych użytkowników.");
+      }
+    }
+
+    // wyświetlenie więcej informacji na temat danej oferty
+    function moreInfo(i) {
+      let buttonId = 'more_' + i;
+      let element = document.getElementById(buttonId);
+
+      var my_json = {
+        "$id": "1",
+        "anId": 7,
+        "slug": "nike-airmax-30160134",
+        "userId": 1,
+        "years": 0,
+        "price": 200,
+        "description": "Air max na sprzed.",
+        "city": "Poznan",
+        "lat": 52.4082663,
+        "lng": 16.9335199,
+        "summary": " ",
+        "datePosted": "2025-01-19T22:01:52.1097278",
+        "user": {
+          "$id": "2",
+          "userId": 1,
+          "name": "Jan",
+          "surname": "Kow",
+          "phone": "3728372937",
+          "email": "user@example.com",
+          "lat": 52.4082663,
+          "lng": 16.9335199,
+          "voivodeship": "Wielkopolskie",
+          "city": "Poznan",
+          "announcements": {
+            "$id": "3",
+            "$values": [{
+              "$id": "4",
+              "anId": 7,
+              "slug": "nike-airmax-30160134",
+              "isActive": false,
+              "brand": "",
+              "model": "",
+              "userId": 1,
+              "years": 0,
+              "originalPrice": null,
+              "category": "",
+              "price": 200,
+              "description": "Air max na sprzed.",
+              "city": "Poznan",
+              "lat": 52.4082663,
+              "lng": 16.9335199,
+              "summary": " ",
+              "datePosted": "2025-01-19T22:01:52.1097278",
+              "user": {
+                "$id": "5",
+                "userId": 1,
+                "name": "Jan",
+                "surname": "Kow",
+                "phone": "3728372937",
+                "email": "user@example.com",
+                "passwordHash": "AQAAAAIAAYagAAAAEJj4mPTTd0PcmvzsYdzrZCS9IaJekU2Z627UolCHxPxQWgvU0HLfdzaLl4gCeJmEPQ==",
+                "lat": 52.4082663,
+                "lng": 16.9335199,
+                "voivodeship": "Wielkopolskie",
+                "city": "Poznan",
+                "announcements": {
+                  "$id": "6",
+                  "$values": [{
+                    "$ref": "4"
+                  }]
+                },
+                "favoriteAnnouncements": null,
+                "comments": null
+              },
+              "comments": {
+                "$id": "7",
+                "$values": []
+              },
+              "images": {
+                "$id": "8",
+                "$values": [{
+                  "$id": "9",
+                  "imageId": 4,
+                  "anId": 7,
+                  "imageUrl": "https://storage.googleapis.com/blobstorageclothes/1-nike-airmax-30160134.png",
+                  "announcement": {
+                    "$ref": "4"
+                  }
+                }]
+              },
+              "favoriteAnnouncements": {
+                "$id": "10",
+                "$values": []
+              }
+            }]
+          },
+          "favoriteAnnouncements": {
+            "$id": "11",
+            "$values": []
+          },
+          "comments": {
+            "$id": "12",
+            "$values": []
+          }
+        },
+        "comments": {
+          "$id": "13",
+          "$values": []
+        },
+        "images": {
+          "$id": "14",
+          "$values": [{
+            "$id": "15",
+            "imageId": 4,
+            "anId": 7,
+            "imageUrl": "https://storage.googleapis.com/blobstorageclothes/1-nike-airmax-30160134.png",
+            "announcement": {
+              "$ref": "1"
+            }
+          }]
+        },
+        "likedBy": {
+          "$id": "16",
+          "$values": []
+        }
+      }
+
+      var offer_id = my_json.anId;
+      var offer_price = my_json.price;
+      var offer_desc = my_json.description;
+      var offer_city = my_json.city;
+      var user_info = my_json.user;
+      var user_name = user_info.name;
+      var user_surname = user_info.surname;
+      var user_phone = user_info.phone;
+      var user_email = user_info.email;
+      var user_voivodeship = user_info.voivodeship;
+      var user_city = user_info.city;
+
+      var buttonLikeId = 'like_' + offer_id;
+
+      let text = "";
+      text += '<div class="modal-form">';
+      text += '<div class="container">';
+      text += '<var class="offer description">Przedmiot:</var>';
+      text += '<br><var class="offer description">Cena: </var>' + '<var class="offer">' + offer_price + '</var>';
+      text += '<br><var class="offer description">Opis: </var>' + '<var class="offer">' + offer_desc + '</var>';
+      text += '<br><var class="offer description">Miasto: </var>' + '<var class="offer">' + offer_city + '</var><br>';
+      text += '<var class="offer description">Wystawca:</var>';
+      text += '<br><var class="offer description">Imię: </var>' + '<var class="offer">' + user_name + '</var>';
+      text += '<br><var class="offer description">Nazwisko: </var>' + '<var class="offer">' + user_surname + '</var>';
+      text += '<br><var class="offer description">Nr telefonu: </var>' + '<var class="offer">' + user_phone + '</var>';
+      text += '<br><var class="offer description">E-mail:: </var>' + '<var class="offer">' + user_email + '</var>';
+      text += '<br><var class="offer description">Województwo: </var>' + '<var class="offer">' + user_voivodeship + '</var>';
+      text += '<br><var class="offer description">Miasto: </var>' + '<var class="offer">' + user_city + '</var>';
+      text += '<br><button class="button-like" id="' + buttonLikeId + '" onclick="likeThat(\'' + offer_id + '\')"> <i class="fa fa-heart"></i> <span>Like</span></button>';
+      text += '</div>';
+      text += '</div>';
+      document.getElementById("moreInfo_container").innerHTML = text;
+      document = document.getElementById('moreInfo_container').style.display = 'block';
+    }
+  </script>
+
+</body>
+
+</html>

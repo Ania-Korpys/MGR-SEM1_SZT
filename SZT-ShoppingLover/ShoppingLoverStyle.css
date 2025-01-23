@@ -31,7 +31,7 @@ body {
 figure {
   display: block;
   width: 202px;
-  height: 185px;
+  height: 230px;
   background-color: #e7e3d8;
   padding: 9px;
   text-align: left;
@@ -47,6 +47,30 @@ figcaption {
   background-image: url("images/icon.png");
   padding-left: 20px;
   background-repeat: no-repeat;
+}
+
+/* style opisów do wyświetlania ofert */
+.offer {
+  width: 80%;
+  font-family: Times, sans-serif, serif;
+  font-style: normal;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px;
+  line-height: 200%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* pozostałe opisy do ofert */
+.description {
+  width: inherit;
+  text-align: justify;
+  padding: inherit;
+  line-height: inherit;
+  margin-left: auto;
+  margin-right: auto;
+  color: #4e5b60;
 }
 
 .button-like {
@@ -137,6 +161,63 @@ figcaption {
 
 .container {
   padding: 12px;
+}
+
+/* do dodania nowej oferty */
+.offer_container {
+  width: 50%;
+  margin: 50px auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+}
+
+label {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+input,
+textarea,
+.button_offer {
+  width: calc(100% - 20px);
+  /* Zmieniamy szerokość na 100% minus padding */
+  padding: 10px;
+  margin: 10px 0;
+  /* Dodany margines tylko od góry i dołu */
+  margin-left: 10px;
+  /* Margines po lewej stronie */
+  margin-right: 10px;
+  /* Margines po prawej stronie */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  /* Dodanie box-sizing, żeby padding był uwzględniany w szerokości */
+}
+
+.button_offer {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.button_offer:hover {
+  background-color: #45a049;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.file-input {
+  padding: 0;
 }
 
 /* przyciski */
