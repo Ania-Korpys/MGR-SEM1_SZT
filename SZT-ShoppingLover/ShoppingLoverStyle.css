@@ -23,7 +23,8 @@ body {
   width: 220px;
   float: left;
   margin: 10px;
-  height: 198px;
+  height: 240px;
+  /* 198px */
   background-repeat: no-repeat;
   background-position: bottom;
 }
@@ -31,7 +32,8 @@ body {
 figure {
   display: block;
   width: 202px;
-  height: 230px;
+  height: 235px;
+  /* 185px */
   background-color: #e7e3d8;
   padding: 9px;
   text-align: left;
@@ -54,7 +56,7 @@ figcaption {
   width: 80%;
   font-family: Times, sans-serif, serif;
   font-style: normal;
-  font-size: 14px;
+  font-size: 16px;
   text-align: center;
   padding: 10px;
   line-height: 200%;
@@ -71,6 +73,7 @@ figcaption {
   margin-left: auto;
   margin-right: auto;
   color: #4e5b60;
+  font-size: 14px;
 }
 
 .button-like {
