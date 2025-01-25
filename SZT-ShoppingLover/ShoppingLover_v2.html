@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Zakupy</title>
+  <link rel="stylesheet" href="ShoppingLoverStyle.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
+  <script src="https://kit.fontawesome.com/3929e16ef5.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+</head>
+
+<body>
+  <div id="logo">
+    <img src="images/Logo.png" />
+  </div>
+
+  <nav>
+    <ul id="menu">
+      <li><button class="button page pointer" onclick="goToOffer()" style="width:auto;">Oferty</button></li>
+      <li><button class="button page pointer" onclick="ifLogged()" style="width:auto;">Konto</button></li>
+      <li><button class="button log pointer" id="buttonLog" type="submit" onclick="ifLoginOrLogout()">Zaloguj</button></li>
+    </ul>
+  </nav>
+
+  <!-- Image loader -->
+  <div id="loader">
+    <img src="images/reload.gif">
+  </div>
+
+  <!-- main part  -->
+  <div class="modal" id="modalOffer" style="display:block">
+  </div>
+
+  <!-- more info about clothes -->
+  <div class="modal login" id="moreInfo_container">
+  </div>
+
+  <!-- Kontener na treść zakładek -->
+  <div id="tabsContainer"></div>
+
+  <!-- dodawanie ogłoszenia -->
+  <div class="modal offer_container" id="add_new_offer">
+    <h1>Wystaw nową ofertę</h1>
+    <form id="offerForm">
+      <div class="form-group">
+        <label for="Brand">Marka:</label>
+        <input type="text" id="Brand" name="Brand" required>
+      </div>
+      <div class="form-group">
+        <label for="Model">Model:</label>
+        <input type="text" id="Model" name="Model" required>
+      </div>
+      <div class="form-group">
+        <label for="ProductionYear">Rok produkcji:</label>
+        <input type="number" id="ProductionYear" name="ProductionYear" required min="0">
+      </div>
+      <div class="form-group">
+        <label for="OriginalPrice">Oryginalna cena:</label>
+        <input type="number" id="OriginalPrice" name="OriginalPrice" required>
+      </div>
+      <div class="form-group">
+        <label for="Category">Kategoria:</label>
+        <input type="text" id="Category" name="Category" required min="0">
+      </div>
+      <div class="form-group">
+        <label for="Years">Lata:</label>
+        <input type="number" id="Years" name="Years" required>
+      </div>
+      <div class="form-group">
+        <label for="Price">Cena:</label>
+        <input type="number" id="Price" name="Price" required>
+      </div>
+      <div class="form-group">
+        <label for="Description">Opis:</label>
+        <textarea id="Description" name="Description" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="summary">Podsumowanie:</label>
+        <textarea id="summary" name="summary" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="image">Zdjęcie:</label>
+        <input type="file" id="image" name="image" class="file-input" accept="image/*" required>
+      </div>
+      <button type="button" class="button_offer">Zapisz ofertę</button>
+    </form>
+  </div>
+
+  <!-- User Account -->
+  <div class="modal modal_desc" id="modalAccount">
+    <p>
+      Zaloguj się by mieć dostęp do:
+    <p>
+      dodawania rzeczy do polubionych, <br />
+      przejrzenia listy wystawionych swoich rzeczy,<br />
+      wystawienia nowej rzeczy.<br />
+    </p>
+    </p>
+    <button class="button log pointer" onclick="document.getElementById('login_container').style.display='block'">Zaloguj</button>
+  </div>
+
+  <!-- zalogowany -->
+  <div class="modal" id="logged_container">
+    <div class="btn_group_logged">
+      <button class="button pointer" type="submit" onclick="getWantedClothes()">Polubione oferty</button>
+      <button class="button pointer" type="submit" onclick="getMyOffers()">Moje wystawione oferty</button>
+      <button class="button pointer" type="submit" id="buttonAddOffer" onclick="addNewOffer()">Dodaj ofertę</button>
+    </div>
+    <div id='wantedClothes'></div>
+    <div id='myOffers'></div>
+  </div>
+
+  <!-- logowanie -->
+  <div class="modal login" id="login_container">
+    <div class="modal-form">
+      <div class="container">
+        <label for="uname"><b>E-mail</b></label>
+        <input class="input" id="email" type="text" name="email" placeholder="Wpisz swój e-mail" required>
+      </div>
+      <div class="container">
+        <label for="password1"><b>Hasło</b></label>
+        <input class="input" id="password" type="password" name="password" placeholder="Wpisz swoje hasło" required>
+      </div>
+      <div class="container">
+        <button class="button log pointer" type="submit" onclick="loginFunction()">Zaloguj</button>
+        <button class="button log pointer" type="submit" onclick="document.getElementById('register_container').style.display='block', document.getElementById('login_container').style.display='none'">Zarejestruj</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejestracja -->
+  <div class="modal login" id="register_container">
+    <div class="modal-form">
+      <div class="container">
+        <label for="name"><b>Imię</b></label>
+        <input class="input" id="name" type="text" name="name" placeholder="Wpisz swoje imię" required>
+      </div>
+      <div class="container">
+        <label for="surname"><b>Nazwisko</b></label>
+        <input class="input" id="surname" type="text" name="surname" placeholder="Wpisz swoje nazwisko" required>
+      </div>
+      <div class="container">
+        <label for="phone"><b>Numer telefonu</b></label>
+        <input class="input" id="phone" type="tel" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{3}" placeholder="Wpisz swój numer telefonu" required>
+      </div>
+      <div class="container">
+        <label for="email"><b>Adres e-mail</b></label>
+        <input class="input" id="e_mail" type="email" name="email" placeholder="Wpisz swój adres e-mail" required>
+      </div>
+      <div class="container">
+        <label for="password1"><b>Hasło</b></label>
+        <input class="input" id="password1" type="password" name="password1" placeholder="Wpisz hasło (min 8 znaków)" required>
+      </div>
+      <div class="container">
+        <label for="password2"><b>Powtórzone hasło</b></label>
+        <input class="input" id="password2" type="password" name="password1" placeholder="Powtórz hasło" required>
+      </div>
+      <div class="container">
+        <label for="city"><b>Miasto</b></label>
+        <input class="input" id="city" type="text" name="city" placeholder="Wpisz swoje miasto" required>
+      </div>
+      <div class="container">
+        <label for="voivodeship"><b>Województwo</b></label>
+        <input class="input" id="voivodeship" type="text" name="voivodeship" placeholder="Wybierz swoje województwo" required>
+      </div>
+      <div class="container">
+        <button class="button log pointer" type="submit" onclick="registerFunction()">Zarejestruj</button>
+        <button class="button back pointer" type="submit" onclick="document.getElementById('login_container').style.display='block', document.getElementById('register_container').style.display='none'">Cofnij</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- dodawanie ogłoszenia -->
+  <div class="modal login" id="add_new_item">
+    <form enctype="multipart/form-data" action="plik.php" method="post">
+
+      <input type="hidden" name="MAX_FILE_SIZE" value="512000" />
+      <input type="file" name="nazwa_pliku" />
+      <input type="submit" value="wyślij" />
+    </form>
+  </div>
+
+  <script>
+    var global_url = "https://0j246c7g-7052.euw.devtunnels.ms/";
+
+    /* funkcja do okien logowania/rejestracji jak się kliknie poza nimi */
+    var modal = document.getElementById('login_container'),
+      modal2 = document.getElementById('register_container'),
+      modal3 = document.getElementById('moreInfo_container');
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+        document = document.getElementById("email").value = "";
+        document = document.getElementById("password").value = "";
+      } else if (event.target == modal2) {
+        modal2.style.display = "none";
+        document = document.getElementById("name").value = "";
+        document = document.getElementById("surname").value = "";
+        document = document.getElementById("phone").value = "";
+        document = document.getElementById("e_mail").value = "";
+        document = document.getElementById("password1").value = "";
+        document = document.getElementById("password2").value = "";
+        document = document.getElementById("city").value = "";
+        document = document.getElementById("voivodeship").value = "";
+      } else if (event.target == modal3) {
+        modal3.style.display = "none";
+      }
+    }
+
+    if (window.localStorage.getItem('accessToken')) {
+      document.getElementById("buttonLog").innerHTML = "Wyloguj";
+    }
+
+    if (window.localStorage.getItem('todo') === "account") {
+      ifLogged();
+    }
+
+    /* sprawdzenie która funkcja potrzebna (przycisk Zaloguj/Wyloguj) */
+    function ifLoginOrLogout() {
+      if (buttonLog.innerHTML === "Zaloguj") {
+        document = document.getElementById('login_container').style.display = 'block';
+      } else {
+        logoutFunction();
+      }
+    }
+
+    /* logowanie - ZALOGUJ */
+    function loginFunction() {
+      var email_ = document.getElementById("email").value;
+      var password_ = document.getElementById("password").value;
+      if (email_ != "" && password_ != "") {
+        $.ajax({
+          type: "POST",
+          url: global_url + "api/auth/login",
+          contentType: 'application/json',
+          data: JSON.stringify({
+            "email": email_,
+            "password": password_
+          }),
+          success: function(response) {
+            console.log(response);
+            window.localStorage.setItem('accessToken', response.token);
+            window.localStorage.setItem('userId', response.userId);
+            document.getElementById("buttonLog").innerHTML = "Wyloguj";
+            document = document.getElementById("email").value = "";
+            document = document.getElementById("password").value = "";
+            document = document.getElementById('login_container').style.display = 'none';
+            document = document.getElementById('modalAccount').style.display = 'none';
+            ifLogged();
+            alert("Logowanie zakończone powodzeniem.");
+          },
+          error: function(response) {
+            alert("Niepoprawne dane logowania.");
+            console.log(response);
+          }
+        });
+      } else {
+        alert("Wypełnij wszystkie pola.");
+      }
+    }
+
+    /* wylogowywanie - WYLOGUJ */
+    function logoutFunction() {
+      window.localStorage.removeItem('accessToken');
+      window.localStorage.removeItem('userId');
+      document.getElementById("buttonLog").innerHTML = "Zaloguj";
+      document = document.getElementById("logged_container").style.display = 'none';
+      window.location.reload();
+      alert("Zostałeś poprawnie wylogowany z systemu.");
+    }
+
+    /* rejestracja - ZAREJESTRUJ */
+    function registerFunction() {
+      var name_ = document.getElementById("name").value;
+      var surname_ = document.getElementById("surname").value;
+      var phone_ = document.getElementById("phone").value;
+      var email_ = document.getElementById("e_mail").value;
+      var password1_ = document.getElementById("password1").value;
+      var password2_ = document.getElementById("password2").value;
+      var city_ = document.getElementById("city").value;
+      var voivodeship_ = document.getElementById("voivodeship").value;
+      if (name_ != "" && surname_ != "" && email_ != "" && password1_ != "" && password2_ != "") {
+        if (emailIsValid(email_)) {
+          if (password1_ === password2_) {
+            if (password1_.length >= 8) {
+              $.ajax({
+                type: "POST",
+                url: global_url + "api/auth/register",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                  "name": name_,
+                  "surname": surname_,
+                  "phone": phone_,
+                  "email": email_,
+                  "password": password1_,
+                  "city": city_,
+                  "voivodeship": voivodeship_
+                }),
+                success: function(response) {
+                  alert("Rejestacja zakończona powodzeniem.");
+                  console.log(response);
+                  document = document.getElementById("name").value = "";
+                  document = document.getElementById("surname").value = "";
+                  document = document.getElementById("phone").value = "";
+                  document = document.getElementById("e_mail").value = "";
+                  document = document.getElementById("password1").value = "";
+                  document = document.getElementById("password2").value = "";
+                  document = document.getElementById("city").value = "";
+                  document = document.getElementById("voivodeship").value = "";
+                  document = document.getElementById('login_container').style.display = 'block';
+                  document = document.getElementById('register_container').style.display = 'none';
+                },
+                error: function(response) {
+                  if (response.status === 400) {
+                    alert("Użytkownik o danym adresie e-mail bądź loginie już istnieje.");
+                  } else {
+                    alert("Rejestacja zakończona niepowodzeniem.");
+                    console.log(response);
+                  }
+                }
+              });
+            } else {
+              alert("Podane hasło jest za krótkie. Musi składać się z co najmniej ośmiu znaków.");
+            }
+          } else {
+            alert("Powtórzone hasło różni się od podanego hasła.");
+          }
+        } else {
+          alert("Niepoprawny adres e-mail.");
+        }
+      } else {
+        alert("Wypełnij wszystkie pola.");
+      }
+    }
+
+    /* sprawdzenie czy poprawny e_mail */
+    function emailIsValid(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    }
+
+    /* sprawdzenie czy zalogowany do Konto (przy przejściu do zakładki KONTO) */
+    function ifLogged() {
+      if (window.localStorage.getItem('todo')) {
+        window.localStorage.removeItem('todo');
+        const buttonLog = document.getElementById("buttonLog");
+        if (buttonLog.innerHTML === "Zaloguj") {
+          document = document.getElementById("modalAccount").style.display = 'block';
+        } else {
+          document = document.getElementById("logged_container").style.display = 'block';
+          document.getElementById("wantedClothes").innerHTML = "";
+          document.getElementById("myOffers").innerHTML = "";
+        }
+      } else {
+        window.localStorage.setItem('todo', "account");
+        window.location.reload();
+      }
+    }
+
+    /* KONTO - POLUBIONE OFERTY */
+    function getWantedClothes() {
+      var userId = window.localStorage.getItem('userId');
+      $.ajax({
+        url: global_url + "api/productPreview/GetFvAnnsByUsrId/" + userId,
+        type: "GET",
+        headers: {
+          'Accept': 'application/json'
+        },
+        beforeSend: function() {
+          $("#loader").show();
+        },
+        success: function(response) {
+          console.log("Response:", response);
+          let text = "";
+          text = getTextFromResponse(response, "wanted");
+          if (text == "<div class=\"entries\" id=\"entries\"></div>") {
+            text = "Nie masz jeszcze polubionych ofert."
+          }
+          document.getElementById("wantedClothes").innerHTML = text;
+        },
+        complete: function() {
+          $("#loader").hide();
+          document.getElementById("myOffers").innerHTML = "";
+        },
+        error: function(xhr, status, error) {
+          alert("Wystąpił błąd, przepraszamy.");
+          console.log(response);
+        }
+      });
+    }
+
+    /* KONTO - MOJE OFERTY */
+    function getMyOffers() {
+      var userId = window.localStorage.getItem('userId');
+      $.ajax({
+        url: global_url + "api/productPreview/getAnnByUsrId/" + userId,
+        type: "GET",
+        headers: {
+          'Accept': 'application/json'
+        },
+        beforeSend: function() {
+          $("#loader").show();
+        },
+        success: function(response) {
+          console.log("Response:", response);
+          let text = "";
+          text = getTextFromResponse(response, "myOffers");
+          if (text == "<div class=\"entries\" id=\"entries\"></div>") {
+            text = "Nie wystawiłeś jeszcze żadnej oferty."
+          }
+          document.getElementById("myOffers").innerHTML = text;
+        },
+        complete: function() {
+          document.getElementById("wantedClothes").innerHTML = "";
+          $("#loader").hide();
+        },
+        error: function(xhr, status, error) {
+          alert("Wystąpił błąd, przepraszamy.");
+          console.log(response);
+        }
+      });
+    }
+
+    /* KONTO - DODAJ OFERTĘ */
+    function addNewOffer() {
+      document = document.getElementById('add_new_offer').style.display = 'block';
+      document = document.getElementById('modalOffer').style.display = 'none';
+      document = document.getElementById('modalAccount').style.display = 'none';
+      document = document.getElementById("logged_container").style.display = 'none';
+      const allTabs = document.querySelectorAll('.tab-content');
+      allTabs.forEach(tab => tab.classList.remove('active'));
+    }
+
+    // Dodajemy event listener do przycisku
+    document.querySelector('.button_offer').addEventListener('click', saveNewOffer);
+
+    /* Zapisz ofertę */
+    function saveNewOffer(event) {
+      event.preventDefault(); // Zatrzymanie domyślnego wysyłania formularza
+
+      // Pobranie danych z formularza
+      const Brand = document.getElementById('Brand').value;
+      const Model = document.getElementById('Model').value;
+      const ProductionYear = document.getElementById('ProductionYear').value;
+      const OriginalPrice = document.getElementById('OriginalPrice').value;
+      const Category = document.getElementById('Category').value;
+      const Years = document.getElementById('Years').value;
+      const Price = document.getElementById('Price').value;
+      const Description = document.getElementById('Description').value;
+      const summary = document.getElementById('summary').value;
+      const imageFile = document.getElementById('image').files[0];
+
+      const offerData = { // Utworzenie obiektu oferty
+        Brand: Brand,
+        Model: Model,
+        ProductionYear: ProductionYear,
+        OriginalPrice: OriginalPrice,
+        Category: Category,
+        Years: Years,
+        Price: Price,
+        Description: Description,
+        summary: summary,
+        Images: imageFile ? imageFile.name : null // Przypisanie pliku, jeśli istnieje
+      };
+
+      const formData = new FormData(); // Tworzymy obiekt FormData
+
+      // Dodajemy dane z offerData do FormData
+      for (const key in offerData) {
+        if (offerData.hasOwnProperty(key)) {
+          formData.append(key, offerData[key]);
+        }
+      }
+
+      // Jeśli mamy plik, dodajemy go oddzielnie
+      if (imageFile) {
+        formData.append('Images', imageFile); // Dodajemy plik jako 'Images'
+      }
+
+      $.ajax({
+        type: "POST",
+        url: global_url + "api/AccountManager/CreateAnnouncement",
+        headers: {
+          'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`, // Dodanie tokena do nagłówka
+          'Accept': '*/*', // Nagłówek akceptacji, który może być różny w zależności od API
+        },
+        data: formData,
+        processData: false, // Ważne! Nie przetwarzaj danych (bo to FormData)
+        contentType: false, // Ważne! Nie ustawiaj typu zawartości (bo to FormData)
+        success: function(response) {
+          console.log(response);
+          alert("Oferta została zapisana!");
+        },
+        error: function(response) {
+          alert("Nie udało się zapisać oferty.");
+          console.log("Response: ", response);
+        }
+      });
+    }
+
+    /* przełączanie stron */
+    function goToOffer() {
+      document = document.getElementById('modalOffer').style.display = 'block';
+      document.getElementById("modalOffer").innerHTML = "";
+      document = document.getElementById('add_new_offer').style.display = 'none';
+      document = document.getElementById('modalAccount').style.display = 'none';
+      document = document.getElementById("logged_container").style.display = 'none';
+      getAllOffers();
+    }
+
+    function getAllOffers() {
+      $.ajax({
+        url: global_url + "api/productPreview/getAnns",
+        type: "GET",
+        headers: {
+          'Accept': 'application/json'
+        },
+        beforeSend: function() {
+          $("#loader").show();
+        },
+        success: function(response) {
+          console.log("Response:", response);
+          let text = "";
+          text = getTextFromResponse(response, "all");
+          document.getElementById("modalOffer").innerHTML = text;
+        },
+        complete: function() {
+          $("#loader").hide();
+        },
+        error: function(xhr, status, error) {
+          alert("Wystąpił błąd, przepraszamy.");
+          console.log(response);
+        }
+      });
+    }
+
+    function getTextFromResponse(response, which) {
+      let items = ""; // Lista ogłoszeń
+      if (which == "all") {
+        items = response.items.$values;
+      } else {
+        items = response.$values;
+      }
+      let text = "";
+      text += '<div class="entries" id="entries">';
+      for (let i in items) {
+        var offer_id = items[i].anId;
+        var offer_price = items[i].price;
+        var offer_desc = items[i].description;
+        var offer_city = items[i].city;
+        var images = items[i].images.$values;
+        var image_url = "";
+
+        for (let j in images) {
+          image_url = images[j].imageUrl;
+        }
+
+        var buttonLikeId = 'like_' + offer_id;
+        var buttonMoreId = 'more_' + offer_id;
+
+        text += '<div class="entry"> <figure><img src="' + image_url + '"/>';
+        text += '<br><var class="offer description">Cena: </var>' + '<var class="offer">' + offer_price + '</var>';
+        text += '<br><var class="offer description">Miasto: </var>' + '<var class="offer">' + offer_city + '</var>';
+        if (which == "all") {
+          text += '<br><button class="button-like" id="' + buttonLikeId + '" onclick="likeThat(\'' + offer_id + '\')"> <i class="fa fa-heart"></i> <span>Like</span></button>';
+        } else if (which == "wanted") {
+          text += '<br><button class="button-like liked" id="' + buttonLikeId + '" onclick="likeThat(\'' + offer_id + '\')"> <i class="fa fa-heart"></i> <span>Like</span></button>';
+        }
+        text += '<button class="button-like" id="' + buttonMoreId + '" type="submit" onclick="moreInfo(' + offer_id + ')"> <span>Więcej informacji</span></button>';
+        text += '</figure></div>';
+      }
+      text += '</div>';
+      return text;
+    }
+
+    /* polubienie oferty */
+    function likeThat(annId) {
+      let buttonId = 'like_' + annId;
+      var button = document.getElementById(buttonId);
+
+      if (window.localStorage.getItem('accessToken')) {
+        if (button.classList.contains('liked')) {
+          $.ajax({
+            type: "DELETE",
+            url: global_url + "api/AccountManager/DeleteAnnFromFavorites?AnnId=" + annId,
+            headers: {
+              'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`, // Dodanie tokena do nagłówka
+              'Accept': '*/*', // Nagłówek akceptacji, który może być różny w zależności od API
+            },
+            success: function(response) {
+              button.classList.toggle("liked");
+              alert("Polubienie oferty zostało usunięte.");
+            },
+            error: function(response) {
+              alert("Wystąpił błąd, przepraszamy.")
+              console.log(response);
+            },
+            complete: function() {
+              window.location.reload();
+            },
+          });
+        } else {
+          $.ajax({
+            type: "POST",
+            url: global_url + "api/AccountManager/AddAnnToFavorites?id=" + annId,
+            headers: {
+              'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`, // Dodanie tokena do nagłówka
+              'Accept': '*/*', // Nagłówek akceptacji, który może być różny w zależności od API
+            },
+            success: function(response) {
+              button.classList.toggle("liked");
+              alert("Polubienie oferty zostało zapisane.");
+            },
+            error: function(response) {
+              alert("Wystąpił błąd, przepraszamy.");
+              console.log(response);
+              logoutFunction();
+            }
+          });
+        }
+      } else {
+        alert("Polubienie oferty to opcja dla zalogowanych użytkowników.");
+      }
+    }
+
+    /* wyświetlenie więcej informacji na temat danej oferty */
+    function moreInfo(annId) {
+      $.ajax({
+        url: global_url + "api/productPreview/getAnnById/" + annId,
+        type: "GET",
+        headers: {
+          'Accept': 'application/json'
+        },
+        success: function(response) {
+          console.log("Response:", response);
+          var offer_price = response.price; // 2
+          var offer_desc = response.description; // 1
+          var offer_city = response.city; // 3
+          var date_posted = response.datePosted;
+          var datePosted = getFormattedDate(date_posted); // 4
+          var summary = response.summary;
+
+          var user_info = response.user; //
+          var user_name = user_info.name; // 5
+          var user_surname = user_info.surname; // 6
+          var user_phone = user_info.phone; // 7
+          var user_email = user_info.email; // 8
+          var user_voivodeship = user_info.voivodeship; // 9
+          var user_city = user_info.city; // 10
+
+          var more_info = user_info.announcements.$values;
+          var more_info_brand = more_info[0].brand; // 12
+          var more_info_model = more_info[0].model; // 13
+          var more_info_years = more_info[0].years; // 14
+          var more_info_originalPrice = more_info[0].originalPrice; // 15
+          var more_info_category = more_info[0].category; // 11
+
+          //var image_url = "";
+          var buttonLikeId = 'like_' + annId;
+
+          let text = "";
+          text += '<div class="modal-form">';
+          text += '<div class="container">';
+          text += '<var class="offer">Przedmiot - najważniejsze informacje:</var>';
+          text += '<br><var class="offer description">Opis: </var>' + '<var class="offer">' + offer_desc + '</var>';
+          text += '<br><var class="offer description">Cena: </var>' + '<var class="offer">' + offer_price + '</var>';
+          text += '<br><var class="offer description">Miasto: </var>' + '<var class="offer">' + offer_city + '</var>';
+          text += '<br><var class="offer description">Data wystawienia: </var>' + '<var class="offer">' + datePosted + '</var><br>';
+          text += '<br><var class="offer">Wystawca:</var>';
+          text += '<br><var class="offer description">Imię: </var>' + '<var class="offer">' + user_name + '</var>';
+          text += '<br><var class="offer description">Nazwisko: </var>' + '<var class="offer">' + user_surname + '</var>';
+          text += '<br><var class="offer description">Nr telefonu: </var>' + '<var class="offer">' + user_phone + '</var>';
+          text += '<br><var class="offer description">E-mail:: </var>' + '<var class="offer">' + user_email + '</var>';
+          text += '<br><var class="offer description">Województwo: </var>' + '<var class="offer">' + user_voivodeship + '</var>';
+          text += '<br><var class="offer description">Miasto: </var>' + '<var class="offer">' + user_city + '</var><br>';
+          text += '<br><var class="offer">Pozostałe informacje na temat oferty:</var>';
+          text += '<br><var class="offer description">Kategoria: </var>' + '<var class="offer">' + more_info_category + '</var>';
+          text += '<br><var class="offer description">Marka: </var>' + '<var class="offer">' + more_info_brand + '</var>';
+          text += '<br><var class="offer description">Model: </var>' + '<var class="offer">' + more_info_model + '</var>';
+          text += '<br><var class="offer description">Wiek produktu: </var>' + '<var class="offer">' + more_info_years + '</var>';
+          text += '<br><var class="offer description">Oryginalna Cena: </var>' + '<var class="offer">' + more_info_originalPrice + '</var>';
+          text += '</div>';
+          text += '</div>';
+          document.getElementById("moreInfo_container").innerHTML = text;
+          document = document.getElementById('moreInfo_container').style.display = 'block';
+        },
+        error: function(xhr, status, error) {
+          document.getElementById("modalOffer").innerHTML = "<p>An error occurred. Please try again later.</p>";
+          console.error("Error fetching data:", error, status, xhr);
+        }
+      });
+    }
+
+    function getFormattedDate(dateString) {
+      const date = new Date(dateString);
+      const formattedDate = date.toLocaleString('pl-PL', { // Formatujemy datę do formatu: dzień-miesiąc-rok godzina:minuta:sekunda
+        weekday: 'long', // pełna nazwa dnia tygodnia
+        year: 'numeric',
+        month: 'long', // pełna nazwa miesiąca
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+      return formattedDate;
+    }
+
+    // TEST
+    window.onload = function() {
+      let menuItems = JSON.parse(localStorage.getItem('menuItems')) || []; // Odczytujemy zapisane elementy menu z localStorage
+      const menu = document.getElementById("menu"); // Znajdujemy element menu (ul)
+      const tabsContainer = document.getElementById('tabsContainer');
+
+      // Dodajemy każdy nowy element do menu
+      menuItems.forEach((tab, index) => {
+        let newItem = document.createElement("li"); // Tworzymy nowy element listy (li)
+        let newButton = document.createElement("button"); // Tworzymy nowy przycisk
+        newButton.textContent = tab.name;
+        newButton.classList.add("button", "page", "pointer");
+
+        // Przypisujemy funkcję do przycisku
+        newButton.onclick = function() {
+          showTabContent(index); // Pokaż treść zakładki
+        };
+
+        newItem.appendChild(newButton); // Dodajemy przycisk do nowego elementu listy
+        menu.appendChild(newItem); // Dodajemy nowy element do menu
+
+        // Tworzymy kontener na treść zakładki
+        let tabContent = document.createElement('div');
+        tabContent.classList.add('tab-content');
+        tabContent.id = 'tabContent_' + index;
+        tabContent.innerHTML = `<h3>${tab.name}</h3><p>${tab.content}</p>`;
+        tabsContainer.appendChild(tabContent);
+      });
+    };
+
+    // Funkcja do pokazywania treści danej zakładki
+    function showTabContent(index) {
+      document = document.getElementById('modalOffer').style.display = 'none';
+      document = document.getElementById('add_new_offer').style.display = 'none';
+      document = document.getElementById('modalAccount').style.display = 'none';
+      document = document.getElementById("logged_container").style.display = 'none';
+      // Ukryj wszystkie zakładki
+      const allTabs = document.querySelectorAll('.tab-content');
+      allTabs.forEach(tab => tab.classList.remove('active'));
+
+      // Pokaż wybraną zakładkę
+      const selectedTab = document.getElementById('tabContent_' + index);
+      selectedTab.classList.add('active');
+    }
+  </script>
+
+</body>
+
+</html>

@@ -317,6 +317,14 @@ nav li a:hover, a.on {
   color: #DC143C;
 }
 
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
 /* oznaczenie, że coś jest klikalne (łapka) */
 .pointer {
   cursor: pointer;

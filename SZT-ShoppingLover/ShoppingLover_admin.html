@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Zarządzanie Treścią</title>
+  <link rel="stylesheet" href="ShoppingLoverStyle.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://kit.fontawesome.com/3929e16ef5.js" crossorigin="anonymous"></script>
+  <style>
+    /* Styl do logowania */
+    .login-container {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f4f4f4;
+      position: absolute;
+    }
+
+    .login-form {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .login-form button {
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .login-form button:hover {
+      background-color: #45a049;
+    }
+
+    /* Styl dla panelu administracyjnego */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    #logo {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .admin-panel {
+      width: 80%;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      color: #4e5b60;
+    }
+
+    nav {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    nav ul li {
+      display: inline;
+      margin: 10px;
+    }
+
+    nav ul li button {
+      background-color: #6495ED;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    nav ul li button:hover {
+      background-color: #87CEFA;
+    }
+
+    /* Styl dla tabeli */
+    table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    td img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .delete-btn {
+      background-color: #DC143C;
+    }
+
+    .delete-btn:hover {
+      background-color: #A50F2D;
+    }
+
+    /* Styl dla formularza dodawania oferty */
+    #addOffer {
+      width: 80%;
+      margin: 20px auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #addOffer h2 {
+      text-align: center;
+      color: #4e5b60;
+    }
+
+    #addOffer form {
+      margin-top: 20px;
+    }
+
+    #addOffer form input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    #addOffer form button {
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #addOffer form button:hover {
+      background-color: #45a049;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 5px;
+    }
+
+    .form-group {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Formularz logowania -->
+  <div class="login-container" id="loginContainer">
+    <div class="login-form">
+      <h2>Logowanie</h2>
+      <input type="email" id="loginEmail" placeholder="Email" required>
+      <input type="password" id="loginPassword" placeholder="Hasło" required>
+      <button onclick="login()">Zaloguj</button>
+    </div>
+  </div>
+
+  <!-- Panel Admina -->
+  <div class="admin-panel" id="adminPanel" style="display:none;">
+    <div id="logo">
+      <img src="images/Logo.png" alt="Logo" />
+    </div>
+    <h1>Panel Administracyjny</h1>
+    <nav>
+      <ul>
+        <li><button class="button page" onclick="showManageOffers()">Zarządzaj ofertami</button></li>
+        <li><button class="button page" onclick="showManageUsers()">Zarządzaj użytkownikami</button></li>
+        <li><button class="button page" onclick="showAddOffer()">Dodaj ofertę</button></li>
+        <li><button class="button page" onclick="showAddNewPage()">Dodaj zakładkę</button></li>
+        <li><button class="button page" onclick="logout()">Wyloguj</button></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Treść strony (po zalogowaniu) -->
+  <div id="manageOffers" style="display:none;">
+    <h2>Oferty</h2>
+    <table id="offersTable">
+      <thead>
+        <tr>
+          <th>Zdjęcie</th>
+          <th>Nazwa</th>
+          <th>Cena</th>
+          <th>Miasto</th>
+          <th>Data</th>
+          <th>Akcje</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Oferty będą dodawane dynamicznie tutaj -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Zarządzanie użytkownikami -->
+  <div id="manageUsers" style="display:none;">
+    <h2>Użytkownicy</h2>
+    <table id="usersTable">
+      <thead>
+        <tr>
+          <th>Imię</th>
+          <th>Nazwisko</th>
+          <th>Telefon</th>
+          <th>Email</th>
+          <th>Miasto</th>
+          <th>Akcje</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Wiersze będą dodawane dynamicznie tutaj -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- dodawanie ogłoszenia -->
+  <div id="addOffer" style="display:none;">
+    <h2>Dodaj ofertę</h2>
+    <form id="offerForm">
+      <div class="form-group">
+        <label for="Brand">Marka:</label>
+        <input type="text" id="Brand" name="Brand" required>
+      </div>
+      <div class="form-group">
+        <label for="Model">Model:</label>
+        <input type="text" id="Model" name="Model" required>
+      </div>
+      <div class="form-group">
+        <label for="ProductionYear">Rok produkcji:</label>
+        <input type="number" id="ProductionYear" name="ProductionYear" required min="0">
+      </div>
+      <div class="form-group">
+        <label for="OriginalPrice">Oryginalna cena:</label>
+        <input type="number" id="OriginalPrice" name="OriginalPrice" required>
+      </div>
+      <div class="form-group">
+        <label for="Category">Kategoria:</label>
+        <input type="text" id="Category" name="Category" required min="0">
+      </div>
+      <div class="form-group">
+        <label for="Years">Lata:</label>
+        <input type="number" id="Years" name="Years" required>
+      </div>
+      <div class="form-group">
+        <label for="Price">Cena:</label>
+        <input type="number" id="Price" name="Price" required>
+      </div>
+      <div class="form-group">
+        <label for="Description">Opis:</label>
+        <textarea id="Description" name="Description" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="summary">Podsumowanie:</label>
+        <textarea id="summary" name="summary" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="image">Zdjęcie:</label>
+        <input type="file" id="image" name="image" class="file-input" accept="image/*" required>
+      </div>
+      <button type="button" class="button_offer">Zapisz ofertę</button>
+    </form>
+  </div>
+
+  <!-- dodanie zakładki -->
+  <div id="addNewPage" style="display:none;">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>Dodaj nową zakładkę</h2>
+      <form id="newTabForm">
+        <div class="form-group">
+          <label for="tabTitle">Tytuł zakładki:</label>
+          <input type="text" id="tabTitle" name="tabTitle" required>
+        </div>
+        <div class="form-group">
+          <label for="tabContent">Treść zakładki:</label>
+          <textarea id="tabContent" name="tabContent" rows="4" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="tabAction">Nazwa funkcji:</label>
+          <textarea id="tabAction" name="tabAction" rows="4" required></textarea>
+        </div>
+        <button type="submit">Dodaj zakładkę</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    var global_url = "https://0j246c7g-7052.euw.devtunnels.ms/";
+    // Funkcja do przełączania między panelami
+    function showManageOffers() {
+      document.getElementById("manageOffers").style.display = "block";
+      document.getElementById("manageUsers").style.display = "none";
+      document.getElementById("addOffer").style.display = "none";
+      document.getElementById("addNewPage").style.display = "none";
+    }
+
+    function showManageUsers() {
+      document.getElementById("manageOffers").style.display = "none";
+      document.getElementById("manageUsers").style.display = "block";
+      document.getElementById("addOffer").style.display = "none";
+      document.getElementById("addNewPage").style.display = "none";
+    }
+
+    function showAddOffer() {
+      document.getElementById("manageOffers").style.display = "none";
+      document.getElementById("manageUsers").style.display = "none";
+      document.getElementById("addOffer").style.display = "block";
+      document.getElementById("addNewPage").style.display = "none";
+    }
+
+    function showAddNewPage() {
+      document.getElementById("manageOffers").style.display = "none";
+      document.getElementById("manageUsers").style.display = "none";
+      document.getElementById("addOffer").style.display = "none";
+      document.getElementById("addNewPage").style.display = "block";
+    }
+
+    // Na początku załaduj oferty
+    $(document).ready(function() {
+      loadOffers();
+      loadUsers();
+    });
+
+    // Funkcja ładująca oferty
+    function loadOffers() {
+      $.ajax({
+        url: global_url + "api/productPreview/getAnns",
+        type: "GET",
+        headers: {
+          'Accept': 'application/json'
+        },
+        success: function(response) {
+          console.log("Response:", response);
+          loadOffersFromJson(response);
+        },
+        error: function(xhr, status, error) {
+          alert("Wystąpił błąd, przepraszamy.");
+          console.log(response);
+        }
+      });
+    }
+
+    function loadOffersFromJson(jsonData) {
+      const offersTable = document.querySelector("#offersTable tbody");
+      offersTable.innerHTML = ''; // Czyszczenie tabeli przed wstawieniem nowych danych
+
+      const offers = jsonData.items.$values;
+
+      offers.forEach(offer => {
+        const row = document.createElement('tr');
+
+        // Zdjęcie
+        const imageCell = document.createElement('td');
+        const image = document.createElement('img');
+        image.src = offer.images.$values.length > 0 ? offer.images.$values[0].imageUrl : '';
+        image.alt = offer.description;
+        image.style.width = '50px';
+        image.style.height = '50px';
+        imageCell.appendChild(image);
+
+        // Nazwa
+        const nameCell = document.createElement('td');
+        nameCell.textContent = offer.slug;
+
+        // Cena
+        const priceCell = document.createElement('td');
+        priceCell.textContent = offer.price + ' PLN';
+
+        // Miasto
+        const cityCell = document.createElement('td');
+        cityCell.textContent = offer.city;
+
+        // Data
+        const dateCell = document.createElement('td');
+        dateCell.textContent = new Date(offer.datePosted).toLocaleDateString();
+
+        // Przycisk do usunięcia
+        const actionsCell = document.createElement('td');
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Usuń';
+        deleteButton.onclick = function() {
+          deleteOffer(offer.anId); // Wywołanie funkcji usuwania oferty
+        };
+        actionsCell.appendChild(deleteButton);
+
+        // Dodanie komórek do wiersza
+        row.appendChild(imageCell);
+        row.appendChild(nameCell);
+        row.appendChild(priceCell);
+        row.appendChild(cityCell);
+        row.appendChild(dateCell);
+        row.appendChild(actionsCell);
+
+        // Dodanie wiersza do tabeli
+        offersTable.appendChild(row);
+      });
+    }
+
+    // Funkcja do usuwania oferty
+    function deleteOffer(offerId) {
+      // Pytanie potwierdzające przed usunięciem
+      const isConfirmed = confirm("Na pewno chcesz usunąć tę ofertę?");
+      if (isConfirmed) {
+        $.ajax({
+          type: "DELETE",
+          url: global_url + "api/AccountManager/DeleteAnnouncement/" + offerId,
+          headers: {
+            'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`, // Dodanie tokena do nagłówka
+            'Accept': '*/*', // Nagłówek akceptacji, który może być różny w zależności od API
+          },
+          success: function(response) {
+            alert("Oferta została usunięta.");
+          },
+          error: function(response) {
+            alert("Wystąpił błąd, przepraszamy.")
+            console.log(response);
+          },
+          complete: function() {
+            window.location.reload();
+          },
+        });
+      } else {
+        // Jeśli użytkownik kliknie "Anuluj", oferta nie zostanie usunięta
+        alert("Usuwanie oferty zostało anulowane.");
+      }
+    }
+
+    // Funkcja ładująca użytkowników
+    function loadUsers() {
+      $.ajax({
+        url: global_url + "api/Admin/getUsersAdmin",
+        type: "GET",
+        headers: {
+          'Accept': 'application/json'
+        },
+        success: function(response) {
+          console.log("Response:", response);
+          populateUsersTable(response);
+        },
+        error: function(xhr, status, error) {
+          alert("Wystąpił błąd, przepraszamy.");
+          console.log(response);
+        }
+      });
+    }
+
+    // Funkcja do dodawania użytkowników do tabeli
+    function populateUsersTable(data) {
+      const usersTableBody = document.querySelector("#usersTable tbody");
+      usersTableBody.innerHTML = ""; // Czyścimy tabelę przed dodaniem nowych danych
+
+      // Iterujemy przez wszystkich użytkowników w danych JSON
+      data.$values.forEach(user => {
+        const row = document.createElement('tr');
+
+        // Tworzenie komórek wiersza
+        const nameCell = document.createElement('td');
+        nameCell.textContent = user.name || "Brak imienia";
+        row.appendChild(nameCell);
+
+        const surnameCell = document.createElement('td');
+        surnameCell.textContent = user.surname || "Brak nazwiska";
+        row.appendChild(surnameCell);
+
+        const phoneCell = document.createElement('td');
+        phoneCell.textContent = user.phone || "Brak telefonu";
+        row.appendChild(phoneCell);
+
+        const emailCell = document.createElement('td');
+        emailCell.textContent = user.email || "Brak emaila";
+        row.appendChild(emailCell);
+
+        const cityCell = document.createElement('td');
+        cityCell.textContent = user.city || "Brak miasta";
+        row.appendChild(cityCell);
+
+        // Tworzenie komórki akcji z przyciskiem usuwania
+        const actionsCell = document.createElement('td');
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Usuń';
+        deleteButton.classList.add('delete-btn');
+        deleteButton.onclick = function() {
+          deleteUser(user.userId); // Funkcja do usunięcia użytkownika po kliknięciu
+        };
+        actionsCell.appendChild(deleteButton);
+        row.appendChild(actionsCell);
+
+        // Dodanie wiersza do tabeli
+        usersTableBody.appendChild(row);
+      });
+    }
+
+    // Funkcja do usuwania użytkownika
+    function deleteUser(userId) {
+      const confirmDelete = confirm("Na pewno chcesz usunąć tego użytkownika?");
+      if (confirmDelete) {
+        $.ajax({
+          type: "DELETE",
+          url: global_url + "api/AccountManager/DeleteAnnouncement/" + userId, // TODO
+          headers: {
+            'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`, // Dodanie tokena do nagłówka
+            'Accept': '*/*', // Nagłówek akceptacji, który może być różny w zależności od API
+          },
+          success: function(response) {
+            alert("Użytkownik został usunięty.");
+          },
+          error: function(response) {
+            alert("Wystąpił błąd, przepraszamy.")
+            console.log(response);
+          },
+          complete: function() {
+            window.location.reload();
+          },
+        });
+      } else {
+        alert("Usuwanie użytkownika anulowane.");
+      }
+    }
+
+    // DODANIE OFERTY
+    // Dodajemy event listener do przycisku
+    document.querySelector('.button_offer').addEventListener('click', saveNewOffer);
+
+    /* Zapisz ofertę */
+    function saveNewOffer(event) {
+      event.preventDefault(); // Zatrzymanie domyślnego wysyłania formularza
+
+      // Pobranie danych z formularza
+      const Brand = document.getElementById('Brand').value;
+      const Model = document.getElementById('Model').value;
+      const ProductionYear = document.getElementById('ProductionYear').value;
+      const OriginalPrice = document.getElementById('OriginalPrice').value;
+      const Category = document.getElementById('Category').value;
+      const Years = document.getElementById('Years').value;
+      const Price = document.getElementById('Price').value;
+      const Description = document.getElementById('Description').value;
+      const summary = document.getElementById('summary').value;
+      const imageFile = document.getElementById('image').files[0];
+
+      const offerData = { // Utworzenie obiektu oferty
+        Brand: Brand,
+        Model: Model,
+        ProductionYear: ProductionYear,
+        OriginalPrice: OriginalPrice,
+        Category: Category,
+        Years: Years,
+        Price: Price,
+        Description: Description,
+        summary: summary,
+        Images: imageFile ? imageFile.name : null // Przypisanie pliku, jeśli istnieje
+      };
+
+      const formData = new FormData(); // Tworzymy obiekt FormData
+
+      // Dodajemy dane z offerData do FormData
+      for (const key in offerData) {
+        if (offerData.hasOwnProperty(key)) {
+          formData.append(key, offerData[key]);
+        }
+      }
+
+      // Jeśli mamy plik, dodajemy go oddzielnie
+      if (imageFile) {
+        formData.append('Images', imageFile); // Dodajemy plik jako 'Images'
+      }
+
+      $.ajax({
+        type: "POST",
+        url: global_url + "api/AccountManager/CreateAnnouncement",
+        headers: {
+          'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`, // Dodanie tokena do nagłówka
+          'Accept': '*/*', // Nagłówek akceptacji, który może być różny w zależności od API
+        },
+        data: formData,
+        processData: false, // Ważne! Nie przetwarzaj danych (bo to FormData)
+        contentType: false, // Ważne! Nie ustawiaj typu zawartości (bo to FormData)
+        success: function(response) {
+          console.log(response);
+          alert("Oferta została zapisana!");
+        },
+        error: function(response) {
+          alert("Nie udało się zapisać oferty.");
+          console.log("Response: ", response);
+        }
+      });
+    }
+
+    // Funkcja do edytowania oferty
+    function editOffer(offerId) {
+      alert("Edytowanie oferty o ID: " + offerId);
+      // Implementuj funkcjonalność edytowania oferty
+    }
+
+    /* DODANIE NOWEJ ZAKŁADKI */
+    var form = document.getElementById("newTabForm");
+    form.onsubmit = function(e) {
+      e.preventDefault();
+
+      var tab_title = document.getElementById("tabTitle").value;
+      var tab_content = document.getElementById("tabContent").value;
+      var tab_action = document.getElementById("tabAction").value;
+
+      const newMenuItem = {
+        name: tab_title,
+        action: tab_action,
+        content: tab_content
+      };
+
+      localStorage.removeItem('menuItems');
+      let menuItems = JSON.parse(localStorage.getItem('menuItems')) || []; // Sprawdzamy, czy w localStorage istnieje już lista elementów menu
+      menuItems.push(newMenuItem); // Dodajemy nowy wpis do tej listy
+      localStorage.setItem('menuItems', JSON.stringify(menuItems)); // Zapisujemy listę zaktualizowaną w localStorage
+
+      // Otworzenie nowej zakładki (strony B)
+      var newTab = window.open("ShoppingLover_v2.html", "_blank"); // C:\Users\Admin\Desktop\SZT-vinted\
+    }
+
+    /* LOGOWANIE */
+    // Funkcja logowania
+    function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      // Logowanie (np. symulacja logowania)
+      if (email === "admin@example.com" && password === "password123") {
+        loginFunction();
+        localStorage.setItem('fakeAccessToken', 'fakeToken'); // Zapisujemy token dostępu
+        document.getElementById('loginContainer').style.display = 'none'; // Ukrywamy formularz logowania
+        document.getElementById('adminPanel').style.display = 'block'; // Pokazujemy panel administracyjny
+        loadOffers(); // Ładujemy oferty po zalogowaniu
+      } else {
+        alert("Niepoprawny email lub hasło");
+      }
+    }
+
+    /* logowanie - ZALOGUJ */
+    function loginFunction() {
+      var email_ = "aknew@gmail.com"; //document.getElementById("email").value;
+      var password_ = "testtest"; //document.getElementById("password").value;
+      $.ajax({
+        type: "POST",
+        url: global_url + "api/auth/login",
+        contentType: 'application/json',
+        data: JSON.stringify({
+          "email": email_,
+          "password": password_
+        }),
+        success: function(response) {
+          console.log(response);
+          window.localStorage.setItem('accessToken', response.token);
+          window.localStorage.setItem('userId', response.userId);
+        },
+        error: function(response) {
+          alert("Niepoprawne dane logowania.");
+          console.log(response);
+        }
+      });
+    }
+
+    // Funkcja logowania
+    function logout() {
+      localStorage.removeItem('accessToken'); // Usuwamy token dostępu
+      document.getElementById('loginContainer').style.display = 'flex'; // Pokazujemy formularz logowania
+      document.getElementById('adminPanel').style.display = 'none'; // Ukrywamy panel administracyjny
+    }
+
+    // Funkcja sprawdzająca czy użytkownik jest zalogowany
+    function checkLogin() {
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+        document.getElementById('loginContainer').style.display = 'none'; // Ukrywamy formularz logowania
+        document.getElementById('adminPanel').style.display = 'block'; // Pokazujemy panel administracyjny
+      } else {
+        document.getElementById('loginContainer').style.display = 'flex'; // Pokazujemy formularz logowania
+        document.getElementById('adminPanel').style.display = 'none'; // Ukrywamy panel administracyjny
+      }
+    }
+
+    // Sprawdzamy stan logowania przy załadowaniu strony
+    window.onload = function() {
+      checkLogin();
+    };
+  </script>
+</body>
+
+</html>
