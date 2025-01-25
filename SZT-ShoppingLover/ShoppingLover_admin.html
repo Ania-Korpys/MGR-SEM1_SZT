@@ -467,7 +467,7 @@
       if (isConfirmed) {
         $.ajax({
           type: "DELETE",
-          url: global_url + "api/AccountManager/DeleteAnnouncement/" + offerId,
+          url: global_url + "api/Admin/DeleteAnnouncement/" + offerId,
           headers: {
             'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`, // Dodanie tokena do nagłówka
             'Accept': '*/*', // Nagłówek akceptacji, który może być różny w zależności od API
@@ -495,7 +495,8 @@
         url: global_url + "api/Admin/getUsersAdmin",
         type: "GET",
         headers: {
-          'Accept': 'application/json'
+          'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`, // Dodanie tokena do nagłówka
+          'Accept': '*/*', // Nagłówek akceptacji, który może być różny w zależności od API
         },
         success: function(response) {
           console.log("Response:", response);
@@ -560,7 +561,7 @@
       if (confirmDelete) {
         $.ajax({
           type: "DELETE",
-          url: global_url + "api/AccountManager/DeleteAnnouncement/" + userId, // TODO
+          url: global_url + "api/Admin/deleteUser/" + userId, // https://0j246c7g-7052.euw.devtunnels.ms/swagger/index.html
           headers: {
             'Authorization': `Bearer ${window.localStorage.getItem('accessToken')}`, // Dodanie tokena do nagłówka
             'Accept': '*/*', // Nagłówek akceptacji, który może być różny w zależności od API
@@ -686,21 +687,21 @@
       const password = document.getElementById('loginPassword').value;
 
       // Logowanie (np. symulacja logowania)
-      if (email === "admin@example.com" && password === "password123") {
-        loginFunction();
-        localStorage.setItem('fakeAccessToken', 'fakeToken'); // Zapisujemy token dostępu
-        document.getElementById('loginContainer').style.display = 'none'; // Ukrywamy formularz logowania
-        document.getElementById('adminPanel').style.display = 'block'; // Pokazujemy panel administracyjny
-        loadOffers(); // Ładujemy oferty po zalogowaniu
-      } else {
-        alert("Niepoprawny email lub hasło");
-      }
+      //if (email === "adminclothes@post.pl" && password === "Maliny_123") {
+      loginFunction();
+      localStorage.setItem('fakeAccessToken', 'fakeToken'); // Zapisujemy token dostępu
+      document.getElementById('loginContainer').style.display = 'none'; // Ukrywamy formularz logowania
+      document.getElementById('adminPanel').style.display = 'block'; // Pokazujemy panel administracyjny
+      loadOffers(); // Ładujemy oferty po zalogowaniu
+      //} else {
+      //    alert("Niepoprawny email lub hasło");
+      //}
     }
 
     /* logowanie - ZALOGUJ */
     function loginFunction() {
-      var email_ = "aknew@gmail.com"; //document.getElementById("email").value;
-      var password_ = "testtest"; //document.getElementById("password").value;
+      var email_ = document.getElementById('loginEmail').value;
+      var password_ = document.getElementById('loginPassword').value;
       $.ajax({
         type: "POST",
         url: global_url + "api/auth/login",
