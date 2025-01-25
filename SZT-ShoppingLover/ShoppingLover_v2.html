@@ -661,9 +661,17 @@
           //var image_url = "";
           var buttonLikeId = 'like_' + annId;
 
+          var images = response.images.$values;
+          var image_url = "";
+
+          for (let j in images) {
+            image_url = images[j].imageUrl;
+          }
+
           let text = "";
           text += '<div class="modal-form">';
           text += '<div class="container">';
+          text += '<img src="' + image_url + '"/><br>';
           text += '<var class="offer">Przedmiot - najważniejsze informacje:</var>';
           text += '<br><var class="offer description">Opis: </var>' + '<var class="offer">' + offer_desc + '</var>';
           text += '<br><var class="offer description">Cena: </var>' + '<var class="offer">' + offer_price + '</var>';
